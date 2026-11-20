@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>From Group Chat to Group Trip</title>
+<meta name="description" content="Product design case study: helping groups of friends move from 'we should go somewhere' to a trip plan everyone agreed to.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="top">
+  <span class="brand">From Group Chat to Group Trip<small>CASE STUDY</small></span>
+  <span class="sp"></span>
+  <div class="mode" role="group" aria-label="Reading mode">
+    <button data-mode="pres" aria-pressed="true">Presentation</button>
+    <button data-mode="doc" aria-pressed="false">Documentation</button>
+  </div>
+  <button class="btn sm" data-open="scratch">Open prototype</button>
+</header>
+<div class="progress" aria-hidden="true"></div>
+<nav class="rail" aria-label="Sections"></nav>
+
+<main>
+
+<!-- ===================== 01 ===================== -->
+<section class="sec hero" id="s01" data-n="01" data-t="The case study">
+  <div class="wrap">
+    <div class="rv">
+      <span class="eyebrow"><b>01</b> Product design assignment</span>
+      <h1>From group chat<br>to <span class="prism">group trip</span></h1>
+      <p class="lead">Trip Room keeps the group chat and adds a shared trip plan beside it. An AI assistant listens, structures what people say, and helps the group land on a plan everyone agreed to. It never decides for them.</p>
+      <div class="ctas"><button class="btn" data-open="scratch">Try the prototype</button><a class="link" href="#s02">Start the story ↓</a></div>
+      <div class="meta">
+        <div><b>Role</b>Product designer</div>
+        <div><b>Scope</b>Research · Strategy · UI · Prototype</div>
+        <div><b>Platform</b>Mobile, inside a travel app</div>
+      </div>
+    </div>
+    <div class="stage rv">
+      <div class="crop"><div class="phonebox" style="--s:.8"><div id="heroPhone" aria-label="Autoplaying demo of the Trip Room prototype"></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 02 ===================== -->
+<section class="sec" id="s02" data-n="02" data-t="The problem">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>02</b> The problem</span>
+      <p class="brief" style="margin-top:20px">“We should go somewhere” is easy to say. Getting everyone to agree on <span class="prism">where, when and how much</span> is where trips die.</p>
+      <p class="lead">Conversations scatter across group chats, preferences conflict and decisions slip. The brief: get a group from a vague idea to a concrete plan they all agree on.</p>
+    </div>
+    <div class="grid2 rv">
+      <div class="signal"><span class="ev brief">Signal 01 · from brief</span><span class="big">Getting everyone to agree</span><p style="color:var(--ink2)">People bring different constraints and wants. The group has no way to weigh them, so decisions stall or the loudest voice wins.</p><div class="opp"><b>DESIGN OPPORTUNITY</b>Move the group from individual preferences to a collective decision.</div></div>
+      <div class="signal"><span class="ev brief">Signal 02 · from brief</span><span class="big">Scattered conversations</span><p style="color:var(--ink2)">What someone can or can't do is buried 200 messages up. Nobody can see where the group actually stands.</p><div class="opp"><b>DESIGN OPPORTUNITY</b>Bring the conversation and its decisions into one shared, structured space.</div></div>
+    </div>
+    <div class="journey rv" aria-label="How the brief was unpacked">
+      <div class="st"><span>1</span><b>Brief</b><p>Vague intent → agreed plan</p></div>
+      <div class="st"><span>2</span><b>Two signals</b><p>Agreement · Scattered talk</p></div>
+      <div class="st"><span>3</span><b>Moment</b><p>When chat stops moving</p></div>
+      <div class="st"><span>4</span><b>Problem statement</b><p>No structure for decisions</p></div>
+      <div class="st"><span>5</span><b>How might we</b><p>Indecision → agreed plan</p></div>
+    </div>
+    <div class="docjump"><button class="link" data-doc="d02">How the brief was unpacked →</button></div>
+
+    <div class="doc" id="d02">
+      <div class="dk">Documentation · unpacking the brief</div>
+      <div class="cols">
+        <div>
+          <div class="block"><h4>Reading the brief word by word</h4>
+            <p>The brief describes two end points. <b>“We should go somewhere”</b> is intent with no commitment: no owner, no date, no budget. <b>“A concrete trip plan the group agrees on”</b> has four parts: a destination, dates, a budget and an itinerary, plus one hidden part, which is <b>agreement</b>.</p>
+            <p>Most travel products already help with destination, dates and itinerary. Agreement is the part nobody owns. So I treated agreement, not planning, as the core problem.</p></div>
+          <div class="block"><h4>What “agrees” has to mean</h4>
+            <p>Agreement isn't a majority vote. If 3 of 5 want Bali but one person can't afford it, the trip either loses a person or quietly dies. I defined agreement as: <b>every traveller has confirmed a plan that respects their hard constraints</b>. Preferences can lose; constraints can't be ignored.</p></div>
+        </div>
+        <div>
+          <div class="block"><h4>How I read the two signals</h4>
+            <ul>
+              <li><b>Getting everyone to agree</b> is a decision problem: inputs are uneven (some people are vocal, some silent), mixed (can't-dos sit next to nice-to-haves) and conflicting.</li>
+              <li><b>Scattered conversations</b> is a memory problem: the information exists, but nobody can see the current state. Silence gets read as agreement.</li>
+            </ul>
+            <p>Both point to the same gap: the group has a place to talk but no shared place where decisions accumulate.</p></div>
+          <div class="block"><h4>Questions I asked of the brief</h4>
+            <ul><li>Who starts the trip, and who carries it?</li><li>Do groups already know where they want to go? (Led to the two scenarios.)</li><li>What does a group need to see to feel it has decided?</li><li>What would make someone say “I can't” early instead of disappearing?</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 03 ===================== -->
+<section class="sec" id="s03" data-n="03" data-t="The user & moment">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>03</b> The user & moment</span>
+      <h2 class="h2">A group of friends, <span class="prism">one of them carrying it</span></h2>
+      <p class="lead">The primary user is the organiser: the friend who says “let's actually do this”. But the product only works if the rest of the group takes part, so every design choice is tested against the quietest member.</p>
+    </div>
+    <div class="persona rv">
+      <div class="card"><span class="ev assume">Primary · assumption</span><span class="role">The organiser</span><p>Starts the plan, nudges people, ends up doing the spreadsheet. Wants momentum without being the bad guy.</p></div>
+      <div class="card"><span class="ev assume">Participant · assumption</span><span class="role">The enthusiast</span><p>Replies fast with big ideas. Easy to mistake their excitement for the group's.</p></div>
+      <div class="card"><span class="ev assume">Participant · assumption</span><span class="role">The constrained one</span><p>Has a real limit on leave or money. Often goes quiet rather than be the one who says no.</p></div>
+    </div>
+    <div class="moment rv">
+      <div class="chatlog" aria-label="Illustrative group chat">
+        <span class="ev illus" style="margin-bottom:6px">Illustrative scenario · not real data</span>
+        <div class="row"><span class="who" style="color:#178556">Kabir</span><span class="b">we should actually go somewhere this December</span></div>
+        <div class="row"><span class="who" style="color:#3D44C9">Maya</span><span class="b">yesss. beach please</span></div>
+        <div class="row"><span class="who" style="color:#B4531A">Arjun</span><span class="b mark" data-n="1">I'm in but leave only after the 20th</span></div>
+        <div class="row me"><span class="b">Bali??</span></div>
+        <div class="row"><span class="who" style="color:#C8363B">Zoya</span><span class="b mark" data-n="2">if it's not crazy expensive</span></div>
+        <div class="gap">3 days later · 46 messages about something else</div>
+        <div class="row me"><span class="b mark" data-n="3">so... are we doing this?</span></div>
+        <div class="gap mark" data-n="4" style="position:relative">no reply</div>
+      </div>
+      <div class="breaks">
+        <span class="eyebrow">Where the chat breaks</span>
+        <div class="br"><i>1</i><div><b>Constraints get buried</b><span>A hard limit is written once, like any other message, then scrolls away.</span></div></div>
+        <div class="br"><i>2</i><div><b>Soft signals aren't soft</b><span>“If it's not expensive” is a real cap said politely. Nobody knows the number.</span></div></div>
+        <div class="br"><i>3</i><div><b>Nobody owns the decision</b><span>The organiser has to restart the conversation, again, with no state to restart from.</span></div></div>
+        <div class="br"><i>4</i><div><b>Silence reads as a yes</b><span>Or as a no. The group can't tell, so it waits.</span></div></div>
+        <p style="font-size:15px;color:var(--ink2);margin-top:6px"><b>The moment:</b> the first time someone asks “so are we doing this?”. Excitement is still there, but nobody can see what's been decided.</p>
+      </div>
+    </div>
+    <div class="doc" id="d03">
+      <div class="dk">Documentation · choosing the user</div>
+      <div class="cols">
+        <div class="block"><h4>Why the organiser, and why not only the organiser</h4>
+          <p>Group-travel tools often default to designing for one planner who does everything. That fixes the organiser's admin, but not agreement, because the rest of the group stays outside the tool. I chose the organiser as the <b>entry point</b> (they start the room) and the whole group as the <b>success condition</b> (the plan is only real when every member confirms).</p>
+          <p>The three roles above are <b>assumptions</b> from desk research and my own experience of group trips, not interview findings. They're there to stress-test decisions: “Would the constrained one say ‘I can't’ here?”</p></div>
+        <div class="block"><h4>Context I assumed</h4>
+          <ul><li>Groups of 4–8 friends who already chat daily in a messenger.</li><li>Short leisure trips (3–7 days), often domestic or short-haul international.</li><li>Uneven budgets and leave across the group.</li><li>The idea starts in chat, usually around a holiday or long weekend.</li></ul>
+          <p>Each of these is listed again in <a class="link" href="#s06">Assumptions & questions</a>.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 04 ===================== -->
+<section class="sec" id="s04" data-n="04" data-t="Research & insights">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>04</b> Research & insights</span>
+      <h2 class="h2">What the tools people use <span class="prism">don't do</span></h2>
+      <p class="lead">With no access to users, I ran desk research on how groups plan today and reviewed the tools they use. Every insight below is labelled by how much evidence sits behind it.</p>
+    </div>
+    <div class="legend rv"><span class="ev brief">From brief</span><span class="ev desk">Desk research</span><span class="ev assume">Assumption</span><span class="ev hyp">Hypothesis to test</span></div>
+    <div class="obs rv">
+      <div class="card"><span class="ev desk">Desk research</span><h3>Chat is built for talking, not deciding</h3><p>Group messengers keep a single timeline. Trip details compete with everything else and scroll away. Pinning helps one message, not a set of decisions.</p></div>
+      <div class="card"><span class="ev desk">Desk research</span><h3>Polls answer one question at a time</h3><p>In-chat polls are quick, but each one is isolated and majority-based. They can't hold “I can't do those dates” next to “I'd prefer the beach”.</p></div>
+      <div class="card"><span class="ev desk">Desk research</span><h3>Planning tools assume the decision is made</h3><p>Shared docs and itinerary apps are good once a destination and dates exist. They don't help a group get there, and usually only the organiser uses them.</p></div>
+      <div class="card"><span class="ev assume">Assumption</span><h3>People avoid saying no in public</h3><p>Budget and leave limits are personal. It's easier to go quiet than to be the reason a plan fails.</p></div>
+      <div class="card"><span class="ev assume">Assumption</span><h3>Momentum has a short half-life</h3><p>If a group doesn't make visible progress in the first days, the idea fades. Speed to a first decision matters more than completeness.</p></div>
+      <div class="card"><span class="ev hyp">Hypothesis</span><h3>Separating can't from prefer unblocks groups</h3><p>Once hard limits are visible and respected, preferences become easier to trade, because nobody fears being overruled on what matters.</p></div>
+    </div>
+    <h3 class="subh rv">Tensions the design has to hold</h3>
+    <div class="tensions rv">
+      <div class="tension"><span>Spontaneous chat</span><span class="bar"></span><span>Structured decisions</span></div>
+      <div class="tension"><span>Including everyone</span><span class="bar"></span><span>Moving fast</span></div>
+      <div class="tension"><span>Personal limits</span><span class="bar"></span><span>Group momentum</span></div>
+      <div class="tension"><span>AI doing the work</span><span class="bar"></span><span>The group owning the decision</span></div>
+    </div>
+    <div class="docjump"><button class="link" data-doc="d04">Research approach and evidence →</button></div>
+    <div class="doc" id="d04">
+      <div class="dk">Documentation · research approach</div>
+      <div class="cols">
+        <div class="block"><h4>What I did</h4>
+          <ul><li><b>Desk research:</b> how group trips are usually organised (messenger threads, in-chat polls, shared docs or sheets, itinerary apps, expense splitters) and where each hands off to the next.</li><li><b>Tool review:</b> walked through the decision points in common messenger polls and collaborative itinerary apps, noting what each captures and what it drops.</li><li><b>Personal and observed experience:</b> used only to generate questions, never as evidence.</li></ul>
+          <p>I didn't run interviews or surveys for this assignment, so there are <b>no participant quotes or statistics</b> on this page. Anything that would need them is marked as an assumption or hypothesis.</p></div>
+        <div class="block"><h4>What I would do with more time</h4>
+          <ul><li><b>Chat archaeology:</b> with consent, read 10–15 real trip threads and map where they stalled.</li><li><b>Organiser interviews</b> (6–8) on the work they do between “we should go” and booking.</li><li><b>Silent-member interviews</b>: people who dropped out of a group trip, and why.</li><li><b>Product data</b> (if inside a travel app): how often multiple users from the same group search the same destination.</li></ul></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 05 ===================== -->
+<section class="sec" id="s05" data-n="05" data-t="Problem framing">
+  <div class="wrap">
+    <div class="rv">
+      <span class="eyebrow"><b>05</b> Problem framing</span>
+      <p class="stmt" style="margin-top:20px">Groups struggle to turn shared travel intent into actionable plans because they lack a structured way to bring individual preferences together, <span class="prism">resolve conflicting constraints</span> and reach decisions everyone can commit to.</p>
+      <span class="hmw">How might we help groups move from indecision to a mutually agreed trip plan?</span>
+    </div>
+    <div class="frame rv">
+      <div class="card"><span class="k">Job to be done · organiser</span><p>When my friends and I say we should travel together, I want to quickly see who's really in and what works for everyone, so we can lock a plan before the excitement fades.</p></div>
+      <div class="card"><span class="k">Job to be done · participant</span><p>When I'm invited on a group trip, I want to say what I can't do without being the one who blocks it, so the plan works for me too.</p></div>
+      <div class="card"><span class="k">Opportunity</span><p>Bring the decision into the conversation. Capture constraints and preferences as people talk, show where they clash, and give the group a clear path to a plan they all confirm.</p></div>
+      <div class="card"><span class="k">Design brief</span><ul><li>Start where the group already is: the chat.</li><li>Separate hard constraints from flexible preferences.</li><li>Show conflicts and trade-offs openly; keep minority views.</li><li>AI drafts and suggests; people edit and decide.</li><li>A plan is tentative until every traveller confirms.</li></ul></div>
+    </div>
+    <div class="docjump"><button class="link" data-doc="d05">Framing iterations →</button></div>
+    <div class="doc" id="d05">
+      <div class="dk">Documentation · how the framing changed</div>
+      <div class="tblwrap"><table>
+        <tr><th>Version</th><th>Framing</th><th>Why I moved on</th></tr>
+        <tr><td>v1</td><td>“Help groups plan trips together.”</td><td>Too broad. Planning tools exist; the brief is about getting to agreement, not itineraries.</td></tr>
+        <tr><td>v2</td><td>“Help groups choose a destination.”</td><td>Too narrow. Groups who already know where still fail on dates and money (Scenario A).</td></tr>
+        <tr><td>v3</td><td>“Help groups vote on trip options.”</td><td>Voting is a mechanism, not the goal. Majority votes can override someone's hard limit.</td></tr>
+        <tr><td><b>v4 · final</b></td><td>Turn shared intent into an agreed plan by structuring preferences, resolving constraints and reaching decisions everyone commits to.</td><td>Covers both scenarios, names agreement as the outcome, and leaves room for the mechanism to be designed.</td></tr>
+      </table></div>
+      <div class="cols" style="margin-top:32px">
+        <div class="block"><h4>Opportunities I considered</h4><ul><li>Reduce the organiser's admin (chosen as a side effect, not the goal).</li><li>Make it safe to say no early (chosen: private constraints, veto vote).</li><li>Turn chat into structured data automatically (chosen: AI drafts, people confirm).</li><li>Inspire destinations (deprioritised: helps Scenario B only, and isn't the bottleneck).</li></ul></div>
+        <div class="block"><h4>Why two JTBDs</h4><p>One job for the organiser would have produced a planning tool. Adding the participant's job forced features that protect the quieter members: private budgets, a “can't do it” option that blocks without blame, and explicit confirmation.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 06 ===================== -->
+<section class="sec" id="s06" data-n="06" data-t="Assumptions & questions">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>06</b> Assumptions & questions</span>
+      <h2 class="h2">What I know, what I'm guessing, <span class="prism">what could break it</span></h2>
+    </div>
+    <div class="grid3 kav rv">
+      <div class="card"><span class="ev brief">Known · from brief</span><ul><li>Trip talk is scattered across group chats.</li><li>Preferences conflict.</li><li>Decisions get delayed.</li><li>Many trips never happen.</li></ul></div>
+      <div class="card"><span class="ev assume">Assumed</span><ul><li>Groups will use a structured space if it saves effort.</li><li>Members will answer 4 short questions.</li><li>People share real limits if they can keep them private.</li><li>An editable AI summary is trusted more than a silent one.</li></ul></div>
+      <div class="card"><span class="ev hyp">Needs validation</span><ul><li>Does the whole group take part, or only the organiser?</li><li>Does seeing conflicts create friction or relief?</li><li>Is a veto vote fair, or does it stall groups?</li><li>When should the AI speak up in chat?</li></ul></div>
+    </div>
+    <div class="matrix rv">
+      <div class="mx" aria-label="Assumption risk map">
+        <span class="q" style="left:14px;top:12px">High impact · low certainty</span>
+        <span class="ax" style="left:14px;bottom:10px">Low certainty →</span><span class="ax" style="right:14px;bottom:10px">→ High certainty</span>
+        <span class="dot hot" style="left:18%;top:20%">1</span><span class="dot hot" style="left:32%;top:30%">2</span><span class="dot hot" style="left:24%;top:42%">3</span>
+        <span class="dot" style="left:62%;top:28%">4</span><span class="dot" style="left:40%;top:70%">5</span><span class="dot" style="left:75%;top:66%">6</span>
+      </div>
+      <div><span class="eyebrow" style="margin-bottom:16px">Most important unanswered questions</span>
+        <ol class="qlist">
+          <li class="hot"><i>1</i>Will the whole group participate, or will it become the organiser's tool again?</li>
+          <li class="hot"><i>2</i>Will people trust an AI that reads their chat? Where's the line?</li>
+          <li class="hot"><i>3</i>Do private budgets help honesty, or hide the real problem?</li>
+          <li><i>4</i>Is 4 questions the right size for a check-in?</li>
+          <li><i>5</i>Do groups want options suggested, or only their own ideas compared?</li>
+          <li><i>6</i>Does showing a tentative plan speed up or slow down confirmation?</li>
+        </ol></div>
+    </div>
+    <div class="doc" id="d06">
+      <div class="dk">Documentation · how each assumption shaped the design</div>
+      <div class="tblwrap"><table>
+        <tr><th>#</th><th>Assumption</th><th>Design response</th><th>How I'd test it</th></tr>
+        <tr><td>1</td><td>The whole group will take part</td><td>Check-in is 4 taps, lives inside the chat, and shows who's in so far</td><td>Prototype test with real friend groups; measure participation rate</td></tr>
+        <tr><td>2</td><td>People accept an AI reading the trip thread</td><td>AI output is labelled as a draft, every line is editable, nothing happens until someone taps Start</td><td>Concept test: show the AI card, ask what they expect it to do next</td></tr>
+        <tr><td>3</td><td>Private budgets lead to honest answers</td><td>Exact number is private by default; the group sees “one cap of ₹X”</td><td>A/B: private vs public budget field, compare answer rate and stated values</td></tr>
+        <tr><td>4</td><td>4 questions is enough</td><td>In or out, can't-do dates, budget, vibe. Everything else stays in chat</td><td>Completion rate by question; follow-up interview on what was missing</td></tr>
+        <tr><td>5</td><td>Groups want suggested options</td><td>Options are generated but explained by fit, and any member can add one</td><td>Track how often suggested vs added options win</td></tr>
+        <tr><td>6</td><td>Tentative state helps</td><td>Plan shows “Tentative · 3 of 5 confirmed” until everyone confirms</td><td>Time from proposal to full confirmation</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 07 ===================== -->
+<section class="sec" id="s07" data-n="07" data-t="Scope & constraints">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>07</b> Scope & constraints</span>
+      <h2 class="h2">Solve the decision. <span class="prism">Leave the booking.</span></h2>
+      <p class="lead">The bottleneck is agreement, not booking. So the work stops the moment the group confirms a plan.</p>
+    </div>
+    <div class="scope rv">
+      <div class="card"><span class="k">In scope</span><ul>
+        <li><b>Spotting trip intent in chat</b><span>Where the idea already lives.</span></li>
+        <li><b>Collecting constraints and preferences</b><span>Private, short, separate from the noise.</span></li>
+        <li><b>Surfacing conflicts and trade-offs</b><span>The step groups skip today.</span></li>
+        <li><b>Comparing viable options</b><span>By fit per person, not popularity.</span></li>
+        <li><b>Group decision and confirmation</b><span>The definition of done.</span></li></ul></div>
+      <div class="card out"><span class="k">Deliberately out of scope</span><ul>
+        <li><b>Booking, payments, visas</b><span>Downstream. A natural next step, not the bottleneck.</span></li>
+        <li><b>Day-by-day itinerary</b><span>Planning detail after agreement.</span></li>
+        <li><b>Expense splitting</b><span>Well served by existing tools.</span></li>
+        <li><b>Integrating with external messengers</b><span>Technically and legally heavy; out of reach for this assignment.</span></li>
+        <li><b>A real AI model</b><span>Behaviour is simulated with mock data to test the interaction.</span></li></ul></div>
+    </div>
+    <div class="cons rv"><span class="pill">Time-boxed assignment</span><span class="pill">No user access</span><span class="pill">Mock data and simulated AI</span><span class="pill">Desktop-first prototype</span><span class="pill">Mobile app UI</span></div>
+    <div class="doc" id="d07">
+      <div class="dk">Documentation · prioritisation</div>
+      <div class="cols">
+        <div class="block"><h4>How I prioritised</h4><p>For each candidate feature I asked two questions: <b>does it move a group closer to agreement?</b> and <b>can I show it working in the prototype?</b> Features that scored on both made the cut. Features that only helped after agreement (booking, itinerary, splitting costs) were cut, however useful.</p></div>
+        <div class="block"><h4>Where the chat lives</h4><p>The ideal is to work inside the group's existing messenger. That isn't realistic for this assignment, so the prototype shows a <b>Trip Room</b>: a group chat with a trip plan tab, inside a travel app. The decision model doesn't depend on which chat it sits in; it could later run as a bot or companion to an external messenger.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 08 ===================== -->
+<section class="sec" id="s08" data-n="08" data-t="Solution strategy">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>08</b> Solution strategy</span>
+      <h2 class="h2">Chat where ideas start, <span class="prism">a plan where they land</span></h2>
+    </div>
+    <div class="hyp rv"><span class="ev hyp">Product hypothesis</span><p>If groups can share preferences, see and resolve conflicts, and decide together in one place, more trip conversations will turn into confirmed plans.</p></div>
+
+    <h3 class="subh rv">The hybrid experience</h3>
+    <p class="subp rv">Chat and plan are two tabs of the same room, not two products. Each feeds the other.</p>
+    <div class="hybrid rv">
+      <div class="side chat"><span class="k" style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted)">CHAT TAB</span><b>Where ideas emerge</b><p>Friends talk normally. The assistant reads the trip thread and offers to start a plan.</p></div>
+      <div class="arrows"><div><i>→</i>AI drafts constraints &amp; preferences</div><div><i>←</i>Decisions post back as pinned messages</div></div>
+      <div class="side ws"><span class="k" style="font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--muted)">TRIP PLAN TAB</span><b>Where ideas become decisions</b><p>Check-in, constraints, trade-offs, options, decision and confirmation. Everyone sees the same state.</p></div>
+    </div>
+
+    <h3 class="subh rv">AI's role: structure, never decide</h3>
+    <div class="verbs rv">
+      <div class="verb"><b>Listen</b><span>Spots trip intent in the conversation.</span></div>
+      <div class="verb"><b>Structure</b><span>Drafts constraints and preferences from what people said.</span></div>
+      <div class="verb"><b>Surface</b><span>Shows conflicts, date windows and trade-offs.</span></div>
+      <div class="verb"><b>Suggest</b><span>Proposes options and explains how each one fits.</span></div>
+    </div>
+    <div class="never rv"><b>THE AI NEVER</b><span>confirms for anyone</span><span>hides a minority view</span><span>picks the winner</span><span>reveals a private budget</span><span>presents a draft as final</span></div>
+
+    <h3 class="subh rv">Two ways in, one way to decide</h3>
+    <div class="lanes rv">
+      <div>
+        <div class="lane" style="background:var(--indigo-soft)"><span class="k" style="color:var(--indigo-text)">Scenario A · known destination</span><b>“Vietnam it is. Now when and how?”</b><div class="steps"><span>Dates</span><span>Budget</span><span>Route &amp; stays</span></div></div>
+        <div class="lane" style="background:var(--fill)"><span class="k" style="color:var(--muted)">Scenario B · from scratch</span><b>“We should go somewhere”</b><div class="steps"><span>Who's in</span><span>Budget</span><span>Duration</span><span>Destination</span></div></div>
+      </div>
+      <div class="merge" aria-hidden="true"><svg viewBox="0 0 60 200" preserveAspectRatio="none"><path d="M0 50 C30 50 30 100 60 100 M0 150 C30 150 30 100 60 100" fill="none" stroke="#C9CBD2" stroke-width="2" stroke-dasharray="4 4"/></svg></div>
+      <div class="fw">
+        <div><i>1</i><b>Constraints</b><span>What each person can't do</span></div>
+        <div><i>2</i><b>Preferences</b><span>Must-haves and nice-to-haves</span></div>
+        <div><i>3</i><b>Trade-offs</b><span>Where they clash, named openly</span></div>
+        <div><i>4</i><b>Consensus</b><span>Love / live with / can't</span></div>
+        <div><i>5</i><b>Trip plan</b><span>Confirmed by everyone</span></div>
+      </div>
+    </div>
+    <div class="docjump"><button class="link" data-doc="d08">AI and conflict-resolution alternatives →</button></div>
+    <div class="doc" id="d08">
+      <div class="dk">Documentation · decision model</div>
+      <div class="cols">
+        <div class="block"><h4>How the AI could have worked</h4>
+          <div class="tblwrap"><table><tr><th>Model</th><th>Trade-off</th><th>Verdict</th></tr>
+          <tr><td>Chat bot member that answers questions</td><td>Natural, but adds noise to the thread and keeps everything unstructured</td><td>Rejected</td></tr>
+          <tr><td>Silent summariser in a sidebar</td><td>Low friction, but nobody acts on a summary they didn't ask for</td><td>Rejected</td></tr>
+          <tr><td>Auto-planner that proposes a full trip</td><td>Fast, but the group didn't decide anything; low ownership</td><td>Rejected</td></tr>
+          <tr><td><b>Structured moderator: drafts, asks, surfaces, suggests</b></td><td>Keeps people in control and turns talk into state</td><td><b>Chosen</b></td></tr></table></div></div>
+        <div class="block"><h4>How the group could resolve conflicts</h4>
+          <div class="tblwrap"><table><tr><th>Approach</th><th>Problem</th><th>Used?</th></tr>
+          <tr><td>Majority vote</td><td>Overrides hard limits; the minority leaves the trip</td><td>No</td></tr>
+          <tr><td>Averaging (budget, dates)</td><td>An average budget fits nobody; an average date may be one nobody can make</td><td>No</td></tr>
+          <tr><td>Ranked choice</td><td>Fair for preferences, blind to constraints</td><td>Partly</td></tr>
+          <tr><td><b>Constraints filter first</b></td><td>Only options that respect every can't-do are votable</td><td><b>Yes</b></td></tr>
+          <tr><td><b>Consent vote (love / live with / can't)</b></td><td>“Can't” works as a veto; finds what everyone can accept</td><td><b>Yes</b></td></tr>
+          <tr><td><b>Keep the minority view</b></td><td>The losing preference is written into the plan or saved for later</td><td><b>Yes</b></td></tr></table></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 09 ===================== -->
+<section class="sec" id="s09" data-n="09" data-t="The experience">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>09</b> The experience</span>
+      <h2 class="h2">From “we should go” to <span class="prism">“we're going”</span></h2>
+      <p class="lead">Five friends, no destination, one December. The demo plays the core journey. Open the prototype to make the choices yourself.</p>
+    </div>
+    <div class="exp rv">
+      <div class="stage"><div class="crop"><div class="phonebox" style="--s:.78"><div id="expPhone" aria-label="Autoplaying journey demo"></div></div></div></div>
+      <div>
+        <ol class="jlist" id="jlist">
+          <li class="on"><i>1</i><div><b>Group conversation</b><span>Friends talk as usual. Limits come up in passing.</span></div></li>
+          <li><i>2</i><div><b>AI spots trip intent</b><span>A draft of who, when, where and budget. Every line is editable.</span></div></li>
+          <li><i>3</i><div><b>Preferences & constraints</b><span>4 private questions. Can't-dos are separate from nice-to-haves.</span></div></li>
+          <li><i>4</i><div><b>Conflicts surfaced</b><span>The date window everyone can make, plus named trade-offs.</span></div></li>
+          <li><i>5</i><div><b>Viable options</b><span>Ranked by fit per person. Rule-breakers stay visible.</span></div></li>
+          <li><i>6</i><div><b>Group decision</b><span>Love / live with / can't. The minority view is kept.</span></div></li>
+          <li><i>7</i><div><b>Plan confirmed</b><span>Tentative until all 5 confirm. Then pinned.</span></div></li>
+        </ol>
+        <div style="display:flex;gap:14px;margin-top:28px;flex-wrap:wrap"><button class="btn" data-open="scratch">Open the prototype</button><button class="btn ghost" data-open="known">Try Scenario A: known destination</button></div>
+      </div>
+    </div>
+    <div class="kis grid4 rv">
+      <div class="card"><span class="k">Interaction</span><h3>Edit what the AI heard</h3><p>Tap any line in the AI draft to correct it. Edited lines are marked, so the group knows a person checked it.</p></div>
+      <div class="card"><span class="k">Interaction</span><h3>Private budget, public cap</h3><p>Your exact number stays private. Options are filtered by it, and the group only sees “over one private budget”.</p></div>
+      <div class="card"><span class="k">Interaction</span><h3>Fit rings per person</h3><p>Each option shows every traveller's face, ringed green, amber or red. You see who a trade-off affects.</p></div>
+      <div class="card"><span class="k">Interaction</span><h3>Tentative until confirmed</h3><p>A proposed plan is dashed and labelled until all travellers tap “I'm in”. Then it becomes the black pass card.</p></div>
+    </div>
+    <div class="doc" id="d09">
+      <div class="dk">Documentation · interaction decisions</div>
+      <div class="cols">
+        <div class="block"><h4>Why the AI asks before acting</h4><p>The intent card waits for a tap on “Start a trip plan”. Starting a plan sends a check-in to everyone, which is a social action. That has to be a person's choice, not the AI's. “Not now” is equally easy.</p></div>
+        <div class="block"><h4>Why answers are hidden until everyone checks in</h4><p>If people see the first answer, they anchor on it. Showing only who has answered (not what) keeps answers independent, and gives the organiser a clear, non-awkward reason to nudge.</p></div>
+        <div class="block"><h4>Why options aren't hidden when they break a rule</h4><p>Hiding an option that “someone” vetoed makes people guess who. Showing it, marked “over one private budget”, explains the trade-off without naming the person.</p></div>
+        <div class="block"><h4>Why the confirm button is indigo</h4><p>In the design system, indigo is reserved for actions that commit: Start now, Submit, Confirm. Everything else is black, so the moment of commitment looks different.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 10 ===================== -->
+<section class="sec" id="s10" data-n="10" data-t="Explored alternatives">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>10</b> Explored alternatives</span>
+      <h2 class="h2">Four directions, <span class="prism">one kept</span></h2>
+    </div>
+    <div class="alts rv">
+      <div class="alt"><div class="wf"><i style="width:60%"></i><i class="b"></i><i style="width:70%"></i><i class="ai"></i><i class="b" style="width:40%"></i><i style="width:50%"></i></div><span class="verdict no">Rejected</span><h3>Chat with an AI bot</h3><p>Lowest friction, but decisions stay buried in the thread. The bot adds noise.</p></div>
+      <div class="alt"><div class="wf"><i class="w"></i><i class="w"></i><i class="w"></i><div class="r"><i style="background:var(--ink)"></i></div></div><span class="verdict no">Rejected</span><h3>Planner form only</h3><p>Clean data, but it's the organiser's homework. The group never comes in.</p></div>
+      <div class="alt"><div class="wf"><i style="width:80%"></i><div class="r"><i style="background:#9097FF;flex:3"></i><i style="flex:2"></i></div><div class="r"><i style="background:#9097FF;flex:1"></i><i style="flex:4"></i></div><div class="r"><i style="background:#9097FF;flex:2"></i><i style="flex:3"></i></div></div><span class="verdict part">Partly used</span><h3>Poll-based voting</h3><p>Fast and familiar. Majority-only, blind to constraints. Kept the speed, changed the vote.</p></div>
+      <div class="alt chosen"><div class="wf"><div class="r" style="gap:8px;height:100%"><div style="flex:1;display:flex;flex-direction:column;gap:6px"><i style="width:70%"></i><i class="b"></i><i class="ai"></i></div><div style="flex:1;display:flex;flex-direction:column;gap:6px"><i class="w"></i><i class="w"></i><i style="background:var(--ink)"></i></div></div></div><span class="verdict yes">Chosen</span><h3>Hybrid: chat + plan + AI</h3><p>Talk stays natural; decisions accumulate in a shared plan. AI connects the two.</p></div>
+    </div>
+    <div class="tradeoff rv"><table>
+      <tr><th>Direction</th><th>Effort for members</th><th>Structure</th><th>Keeps nuance</th><th>Group owns decision</th></tr>
+      <tr><td>Chat + AI bot</td><td class="m">●●●</td><td class="m">●○○</td><td class="m">●●○</td><td class="m">●●○</td></tr>
+      <tr><td>Planner form</td><td class="m">●○○</td><td class="m">●●●</td><td class="m">●○○</td><td class="m">●○○</td></tr>
+      <tr><td>Poll voting</td><td class="m">●●●</td><td class="m">●●○</td><td class="m">●○○</td><td class="m">●●○</td></tr>
+      <tr class="chosen"><td>Hybrid · chosen</td><td class="m">●●○</td><td class="m">●●●</td><td class="m">●●●</td><td class="m">●●●</td></tr>
+    </table><p style="font-size:12.5px;color:var(--muted);margin-top:10px">● = better. My judgement from the design exploration, not measured.</p></div>
+
+    <h3 class="subh rv">Screen variations: showing the options</h3>
+    <p class="subp rv">The hardest screen was comparing options. Three versions:</p>
+    <div class="vars rv">
+      <div class="var"><div class="vz"><span style="font-size:12px;font-weight:600">Krabi</span><div class="mbar"><span style="flex:3;background:#4F57E8">3</span><span style="flex:2;background:#C9CBD2">2</span></div><span style="font-size:12px;font-weight:600">Bali</span><div class="mbar"><span style="flex:4;background:#4F57E8">4</span><span style="flex:1;background:#C9CBD2">1</span></div></div><span class="verdict no">Rejected</span><p><b>Vote bars.</b> Bali “wins”, but the bar hides that its one “no” is a budget someone can't meet.</p></div>
+      <div class="var"><div class="vz"><div class="mxg"><span></span><b>R</b><b>A</b><b>M</b><b>K</b><b>Z</b><span>Krabi</span><i style="background:#22A06B"></i><i style="background:#22A06B"></i><i style="background:#22A06B"></i><i style="background:#22A06B"></i><i style="background:#22A06B"></i><span>Vietnam</span><i style="background:#22A06B"></i><i style="background:#22A06B"></i><i style="background:#E8833A"></i><i style="background:#22A06B"></i><i style="background:#22A06B"></i><span>Bali</span><i style="background:#22A06B"></i><i style="background:#22A06B"></i><i style="background:#22A06B"></i><i style="background:#22A06B"></i><i style="background:#E5484D"></i></div></div><span class="verdict part">Too dense</span><p><b>Fit matrix.</b> Complete, but a spreadsheet on a phone. Hard to read at 5+ people.</p></div>
+      <div class="var chosen"><div class="vz"><div class="fitrow"><b>Krabi</b><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span></div><div class="fitrow"><b>Vietnam</b><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#E8833A"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span></div><div class="fitrow" style="opacity:.6"><b>Bali</b><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#22A06B"></span><span class="fd" style="border-color:#E5484D"></span></div></div><span class="verdict yes">Chosen</span><p><b>Option cards with fit rings.</b> One line per person, readable at a glance, with the reason underneath.</p></div>
+    </div>
+    <div class="doc" id="d10">
+      <div class="dk">Documentation · why the others were rejected</div>
+      <div class="cols">
+        <div class="block"><h4>Chat + AI bot</h4><p>It's the lightest to build and needs no new screens, which is why I tried it first. But every decision becomes another message that scrolls away, which is the exact problem in signal 02. A bot that keeps reposting summaries becomes noise people mute.</p></div>
+        <div class="block"><h4>Planner form</h4><p>Gives perfect structure. In practice it moves the work from the chat to the organiser's form: one person fills it in, others are asked to “check the doc”. It solves admin, not agreement.</p></div>
+        <div class="block"><h4>Poll-based voting</h4><p>Familiar and fast, so I kept its speed: the decision step is one tap per option. I replaced the majority rule with a consent vote, because a poll can't tell “I'd prefer not” from “I can't go”.</p></div>
+        <div class="block"><h4>Where the AI speaks in chat</h4><p>I explored the AI posting after every relevant message (too noisy), only when asked (too passive) and at <b>milestones</b> (intent detected, everyone checked in, plan proposed, plan confirmed). Milestones were chosen: four messages per trip, each one useful.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 11 ===================== -->
+<section class="sec" id="s11" data-n="11" data-t="Success measurement">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>11</b> Success measurement</span>
+      <h2 class="h2">One number that says <span class="prism">the trip is real</span></h2>
+      <p class="lead">No targets here. The product hasn't shipped, so any number would be invented. Instead: what to measure, how to define it, and what would tell us it's working.</p>
+    </div>
+    <div class="ns rv"><div class="globe"></div>
+      <div style="position:relative;z-index:1"><span class="k">NORTH STAR · FROM BRIEF</span><h3>% of initiated group trip discussions that end in a confirmed trip plan</h3></div>
+      <div class="def"><span><b>Initiated:</b> a trip plan started in a room with 3+ members.</span><span><b>Confirmed:</b> destination, dates and budget set, and every member who said “in” has tapped confirm.</span><span><b>Window:</b> measured within 30 days of initiation.</span></div>
+    </div>
+    <h3 class="subh rv">The path to a confirmed plan</h3>
+    <div class="funnel rv">
+      <div><i>Activation</i><b>Intent detected</b><span>AI cards shown</span></div>
+      <div><i>Activation</i><b>Plan started</b><span>Start a trip plan tapped</span></div>
+      <div><i>Participation</i><b>Check-ins</b><span>% of members who answer</span></div>
+      <div><i>Decision</i><b>Options compared</b><span>Viable options reached</span></div>
+      <div><i>Decision</i><b>Decision made</b><span>Consent vote completed</span></div>
+      <div><i>Conversion</i><b>Plan confirmed</b><span>All members confirmed</span></div>
+    </div>
+    <div class="mets rv">
+      <div class="met"><span class="k">Participation</span><b>Member check-in rate</b><span>Members who answered ÷ members invited, within 48h. Tests assumption 1.</span></div>
+      <div class="met"><span class="k">Decision completion</span><b>Plans reaching a decision</b><span>Rooms with a completed consent vote ÷ plans started.</span></div>
+      <div class="met"><span class="k">Speed</span><b>Time from intent to confirmed</b><span>Median days. Momentum is the thing chats lose.</span></div>
+      <div class="met"><span class="k">Quality</span><b>“I'm happy with this plan”</b><span>One-tap pulse after confirming, split by people who voted for and against the winner.</span></div>
+      <div class="met guard"><span class="k">Guardrail</span><b>Drop-off after conflicts</b><span>If showing trade-offs makes groups quit, the framing needs work.</span></div>
+      <div class="met guard"><span class="k">Guardrail</span><b>AI edit rate</b><span>How often people correct the AI draft. High = low trust or poor extraction.</span></div>
+      <div class="met guard"><span class="k">Guardrail</span><b>Members leaving the room</b><span>Leaving after the vote may mean the minority felt overruled.</span></div>
+      <div class="met guard"><span class="k">Guardrail</span><b>Dismissed AI cards</b><span>“Not now” rate. Too high = the AI speaks up at the wrong moment.</span></div>
+    </div>
+    <div class="doc" id="d11">
+      <div class="dk">Documentation · measurement plan</div>
+      <div class="cols">
+        <div class="block"><h4>Why this North Star</h4><p>It comes straight from the brief and measures the outcome, not activity. Messages sent or rooms created can rise while trips still die. Requiring every “in” member to confirm stops one enthusiastic organiser from counting as a group decision.</p></div>
+        <div class="block"><h4>How I'd measure it</h4><ul><li><b>Instrument</b> each funnel step as an event with room ID and member count.</li><li><b>Baseline:</b> group trips planned in chat only. Proxy: multiple users from one group searching the same destination.</li><li><b>Test:</b> A/B on whether the AI offers to start a plan, then compare the North Star at 30 days.</li><li><b>Read qualitatively</b> alongside: interview groups whose plans stalled at each step.</li></ul></div>
+        <div class="block"><h4>Metric definitions</h4><div class="tblwrap"><table><tr><th>Metric</th><th>Numerator</th><th>Denominator</th></tr>
+          <tr><td>Activation</td><td>Plans started</td><td>Intent cards shown</td></tr>
+          <tr><td>Participation</td><td>Members checked in ≤48h</td><td>Members invited</td></tr>
+          <tr><td>Decision completion</td><td>Consent votes completed</td><td>Plans started</td></tr>
+          <tr><td>Conversion</td><td>Plans confirmed by all</td><td>Plans started</td></tr></table></div></div>
+        <div class="block"><h4>What would make me change course</h4><p>High activation with low participation means the organiser is still doing it alone; rethink the check-in. High participation with low decision completion means the options or the vote are the blocker. Low happiness among people who lost the vote means the minority view isn't being kept well enough.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 12 ===================== -->
+<section class="sec" id="s12" data-n="12" data-t="Learnings & next steps">
+  <div class="wrap">
+    <div class="shead rv">
+      <span class="eyebrow"><b>12</b> Learnings & next steps</span>
+      <h2 class="h2">What I learned, <span class="prism">what I'd test next</span></h2>
+    </div>
+    <div class="grid2 rv">
+      <div class="card"><span class="k">Key learnings · from the design process</span>
+        <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px;color:var(--ink2)">
+          <li><b>Agreement isn't an average.</b> Splitting can't-dos from nice-to-haves changed every screen after it.</li>
+          <li><b>Design for the quiet member.</b> Private budgets and a no-blame “can't” matter more than clever options.</li>
+          <li><b>The AI is most useful as a clerk.</b> Drafting and counting builds trust; deciding would break it.</li>
+          <li><b>Show what was ruled out.</b> Hidden options create suspicion; marked ones create understanding.</li></ul></div>
+      <div class="card white"><span class="k">Limitations</span>
+        <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:10px;color:var(--ink2)">
+          <li>No primary research. Users and insights are assumptions and desk research.</li>
+          <li>The AI is simulated with mock data. Real intent detection will make mistakes.</li>
+          <li>Prices and destinations are mock content.</li>
+          <li>Only the core journey is prototyped. Re-planning when someone drops out isn't designed.</li></ul></div>
+    </div>
+    <div class="roadmap rv">
+      <div class="card"><span class="k">Validate first</span><ul><li>Prototype test with 3–5 real friend groups, using their own chat</li><li>Will the whole group check in?</li><li>Is the AI draft trusted and corrected?</li><li>Private vs public budget</li></ul></div>
+      <div class="card"><span class="k">Next</span><ul><li>Re-planning when someone drops out</li><li>Any member can add an option</li><li>Smart nudges for missing check-ins</li><li>Hand-off to booking and visas</li></ul></div>
+      <div class="card"><span class="k">Later</span><ul><li>Work inside external messengers</li><li>Shared itinerary after confirmation</li><li>Cost splitting</li><li>Learn a group's patterns across trips</li></ul></div>
+    </div>
+    <div class="doc" id="d12">
+      <div class="dk">Documentation · open questions to take into testing</div>
+      <div class="cols">
+        <div class="block"><h4>What I'm least sure about</h4><p>Whether groups will move from their messenger into a new room at all. The decision model works the same as a companion to an existing chat, so if they won't move, the next version should meet them where they are rather than ask them to switch.</p></div>
+        <div class="block"><h4>What I'd change with real data</h4><p>The 4 check-in questions and the consent vote are the two pieces most likely to change. Both are easy to adjust: questions are data-driven, and the vote rule (veto on “can't”) is one function in the prototype.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="end">
+  <div class="wrap">
+    <span class="eyebrow" style="justify-content:center">Thank you</span>
+    <h2 style="margin-top:16px">From “we should go”<br>to <span class="prism">we're going.</span></h2>
+    <div class="ctas"><button class="btn" data-open="scratch">Open the prototype</button><button class="btn ghost" data-doc="d02">Read the documentation</button></div>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><span>FROM GROUP CHAT TO GROUP TRIP · PRODUCT DESIGN CASE STUDY</span><span>MOCK DATA · SIMULATED AI · NO REAL USER DATA</span></div></footer>
+
+<!-- ===================== overlay ===================== -->
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="Trip Room prototype">
+  <div class="panel" style="position:relative">
+    <button class="x" aria-label="Close prototype">×</button>
+    <div class="guide">
+      <span class="eyebrow">Interactive prototype</span>
+      <h3>Trip Room</h3>
+      <div class="seg" id="scn" role="group" aria-label="Scenario">
+        <button data-s="scratch" aria-pressed="true">B · From scratch</button>
+        <button data-s="known" aria-pressed="false">A · Known destination</button>
+      </div>
+      <ol class="gsteps" id="gsteps"></ol>
+      <div class="why" id="why"></div>
+      <div class="gfoot"><button class="link" id="ovReset">Restart</button><span>Mock data · simulated AI · Esc to close</span></div>
+    </div>
+    <div class="phonecol"><div class="phonebox" id="ovPhoneBox"><div id="ovPhone"></div></div></div>
+  </div>
+</div>
+
+<script src="proto.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
