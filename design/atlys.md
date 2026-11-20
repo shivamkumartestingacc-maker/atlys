@@ -1,4 +1,4 @@
-# Atlys App UI Guidelines
+# atlys.md · App UI Guidelines
 
 The design system for every app screen in this assignment. It was approved from the "Atlys Design System" artifact. The source page is at `design/reference/atlys-design-system.html`; open it to see every token and component rendered.
 
