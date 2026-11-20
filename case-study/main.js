@@ -18,16 +18,9 @@
 
   /* ---------- rail + progress ---------- */
   const secs = $$('section.sec');
-  const rail = $('.rail');
-  secs.forEach((s) => {
-    const a = document.createElement('a');
-    a.href = '#' + s.id;
-    a.innerHTML = `<i></i>${s.dataset.n}<span>${s.dataset.t}</span>`;
-    rail.appendChild(a);
-  });
-  const links = $$('.rail a');
+  const where = $('#where');
   const io = new IntersectionObserver((ents) => {
-    ents.forEach((en) => { if (en.isIntersecting) { links.forEach((l) => l.classList.toggle('on', l.getAttribute('href') === '#' + en.target.id)); } });
+    ents.forEach((en) => { if (en.isIntersecting && where) where.textContent = `${en.target.dataset.n} · ${en.target.dataset.t}`; });
   }, { rootMargin: '-45% 0px -50% 0px' });
   secs.forEach((s) => io.observe(s));
   const prog = $('.progress');
@@ -72,10 +65,10 @@
     'Love it / can live with it / can\'t do it. A "can\'t" is a veto, so the result is something everyone can accept, not just the majority. The minority view is kept.',
     'The plan stays tentative until every traveller confirms. The assistant never confirms on anyone\'s behalf. Once confirmed, it is pinned in chat.'
   ];
-  gsteps.innerHTML = TripRoom.STEPS.map((s, i) => `<li><i>${i + 1}</i>${s}</li>`).join('');
+  gsteps.innerHTML = TripRoom.STEPS.map((s, i) => `<li><i>0${i + 1}</i>${s}</li>`).join('');
   const syncGuide = (n) => {
     $$('li', gsteps).forEach((li, i) => { li.classList.toggle('on', i === n); li.classList.toggle('done', i < n); });
-    why.innerHTML = `<b>STEP ${n + 1} · WHY IT WORKS THIS WAY</b><p>${WHY[n]}</p>`;
+    why.innerHTML = `<b>WHY STEP ${n + 1} WORKS THIS WAY</b><p>${WHY[n]}</p>`;
   };
   let live = null, lastFocus = null;
   const scale = () => {
@@ -91,11 +84,12 @@
     if (!live) live = TripRoom(el, { scenario: scn || 'scratch', onStep: syncGuide });
     else live.reset(scn || 'scratch');
     $$('#scn button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.s === (scn || 'scratch'))));
-    $('.ov .x').focus();
+    $('#ovClose').focus();
   }
   function closeOv() { ov.classList.remove('open'); document.body.style.overflow = ''; if (live) live.stop(); if (lastFocus) lastFocus.focus(); }
   $$('[data-open]').forEach((b) => b.addEventListener('click', () => openOv(b.dataset.open || 'scratch')));
   $('.ov .x').addEventListener('click', closeOv);
+  $('#ovClose').addEventListener('click', closeOv);
   ov.addEventListener('click', (e) => { if (e.target === ov) closeOv(); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov.classList.contains('open')) closeOv(); });
   $$('#scn button').forEach((b) => b.addEventListener('click', () => { $$('#scn button').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); live.reset(b.dataset.s); }));
