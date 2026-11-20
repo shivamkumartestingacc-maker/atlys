@@ -12,7 +12,7 @@
   };
   const OTHERS = ['a', 'm', 'k', 'z'];
   const VIBES = { beach: 'Beach', hills: 'Hills', city: 'City', food: 'Food' };
-  const STEP_NAMES = ['Group conversation', 'AI spots trip intent', 'Preferences & constraints', 'Conflicts surfaced', 'Viable options', 'Group decision', 'Plan confirmed'];
+  const STEP_NAMES = ['Groups home', 'Group conversation', 'AI trip brief', 'Preferences & constraints', 'Group alignment', 'Destination comparison', 'Collaborative decision', 'Trip workspace'];
 
   const SC = {
     scratch: {
@@ -116,15 +116,23 @@
         chat: [], draft: '', editing: null, edits: {},
         you: { in: null, cant: new Set(), budget: 60000, priv: true, vibe: {} },
         submitted: false, arrived: 0, yourVotes: {}, votesIn: false,
-        confirmed: {}, done: false, planDot: false
+        confirmed: {}, done: false, planDot: false, inRoom: false
       };
     }
 
     function reset(scKey) {
       clear();
       S = fresh(scKey || (S && S.key) || opts.scenario || 'scratch');
-      if (opts.onStep) opts.onStep(0);
+      report();
       render();
+      if (auto) later(enterRoom, 1600);
+    }
+
+    // 0 = groups home; internal steps 0..6 map to 1..7
+    function report() { if (opts.onStep) opts.onStep(S.inRoom ? S.step + 1 : 0); }
+    function enterRoom() {
+      if (S.inRoom) return;
+      S.inRoom = true; report(); render(true);
       playSeed(auto ? 380 : 520);
     }
 
@@ -144,7 +152,7 @@
 
     function setStep(n) {
       S.step = n;
-      if (opts.onStep) opts.onStep(n);
+      report();
       render(true);
     }
 
@@ -200,12 +208,33 @@
       if (ed) ed.focus();
     }
 
+    function homeFrame() {
+      const sc = S.sc;
+      const other = sc === SC.scratch ? SC.known : SC.scratch;
+      const row = (name, sub, right, cls, act) => `<div class="gr ${cls}" ${act ? 'data-a="room" role="button" tabindex="0"' : ''}><span class="ga">${name[0]}</span><div class="gt"><b>${esc(name)}</b><span>${sub}</span></div>${right}</div>`;
+      return `${statusBar()}
+      <div class="body" style="top:44px">
+        <div class="hrow2"><h3 class="ph" style="font-size:30px">Groups</h3><span class="rb" aria-hidden="true">+</span></div>
+        <div class="gsearch">Search groups</div>
+        ${row(sc.group, `<em class="spot"><span class="orb" style="width:12px;height:12px"></span>Trip idea spotted</em> · 6 new`, '<span class="gn2">9:41</span>', 'hot', true)}
+        ${row('Goa 2025', 'Trip done · 6 members', '<span class="sp y">Done</span>', '', false)}
+        ${row(other.group, 'Arjun: lol same', '<span class="gn2">Mon</span>', '', false)}
+        ${row('Flatmates', 'Rent is due Friday', '<span class="gn2">Sun</span>', '', false)}
+        <span class="note" style="margin-top:8px">Mock groups. Tap the first one.</span>
+      </div>
+      <div class="foot"><button class="bt ghost" data-a="newgroup">+ New trip group</button></div>`;
+    }
+    function statusBar() {
+      return `<div class="sb"><span>9:41</span><span class="ic"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13" y="0" width="3" height="11" rx="1"/></svg><span class="bat"></span></span></div>`;
+    }
+
     function frame() {
+      if (!S.inRoom) return homeFrame();
       const sc = S.sc;
       return `
       <div class="sb"><span>9:41</span><span class="ic"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13" y="0" width="3" height="11" rx="1"/></svg><span class="bat"></span></span></div>
       <div class="hd">
-        <div class="r1"><span class="rb">${ico.back}</span>
+        <div class="r1"><span class="rb" data-a="home" role="button" tabindex="0" aria-label="Back to groups">${ico.back}</span>
           <div class="gn"><b>${esc(sc.group)}</b><span>Riya, Arjun, Maya, Kabir, Zoya</span></div>
           <span class="avs">${['r', 'a', 'm', 'k', 'z'].map((i) => av(i)).join('')}</span></div>
         <div class="tabs" role="tablist">
@@ -367,8 +396,17 @@
         <span class="st2">${all ? 'Confirmed by 5 of 5' : `Tentative · ${n} of 5 confirmed`}</span>
         <span class="pt">${w.name}</span>
         <div class="pk"><div><span>Dates</span><b>${WEEKS[w.week]}</b></div><div><span>Budget</span><b>~${rupee(w.price)} pp</b></div><div><span>Travellers</span><b>5</b></div><div><span>Nights</span><b>${S.sc.nights}</b></div></div></div>
-      ${all ? '<span class="sub" style="text-align:center">Saved to the trip plan and pinned in chat. Next: visas, flights, stays.</span>' : '<span class="sub">Nothing is booked or final until every traveller confirms.</span>'}
-      <div class="box mem">${mem}</div>`;
+      ${all ? `<span class="lb" style="margin-top:6px">Trip workspace</span>
+      <div class="ws">
+        <div><i class="ok">✓</i><b>Destination</b><span>${w.name.split(' ·')[0]}</span></div>
+        <div><i class="ok">✓</i><b>Dates</b><span>${WEEKS[w.week]}</span></div>
+        <div><i class="ok">✓</i><b>Budget cap</b><span>~${rupee(w.price)} pp</span></div>
+        <div><i>·</i><b>Stays</b><span>Next decision · vote opens</span></div>
+        <div><i>·</i><b>Activities</b><span>3 ideas saved from chat</span></div>
+      </div>
+      <div class="minor">${S.sc.minority(w.id)}</div>
+      <div class="box mem">${mem}</div>` : `<span class="sub">Nothing is booked or final until every traveller confirms.</span>
+      <div class="box mem">${mem}</div>`}`;
     }
 
     function planFoot() {
@@ -394,6 +432,9 @@
     function act(a, v, el) {
       const y = S.you;
       switch (a) {
+        case 'room': enterRoom(); break;
+        case 'newgroup': enterRoom(); break;
+        case 'home': clear(); S = fresh(S.key); report(); render(true); break;
         case 'view': S.view = v; if (v === 'plan') S.planDot = false; else S.chatDot = false; render(true); break;
         case 'send': sendMsg(); break;
         case 'edit': S.editing = v; render(); break;
@@ -469,6 +510,7 @@
         if (e.target.dataset.in === 'draft') { e.preventDefault(); sendMsg(); }
         else if (e.target.dataset.editinput) { e.preventDefault(); act('save', e.target.dataset.editinput); }
         else if (e.target.matches('[data-a="edit"]')) { e.preventDefault(); act('edit', e.target.dataset.v); }
+        else if (e.target.matches('[data-a="room"],[data-a="home"]')) { e.preventDefault(); act(e.target.dataset.a); }
       });
     }
 

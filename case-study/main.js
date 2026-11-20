@@ -57,13 +57,14 @@
   const gsteps = $('#gsteps');
   const why = $('#why');
   const WHY = [
-    'Friends talk the way they already do. Nothing is asked of them yet. The trip lives inside the conversation, not in a separate app they have to open.',
-    'The assistant notices trip intent and drafts what it heard. Every line is editable and marked as a draft. Nothing is created until someone taps Start.',
-    'Everyone answers privately first: in or out, dates they cannot do, a budget cap, vibe. Constraints and preferences are separated on purpose. Budget can stay private.',
-    'Hard constraints come first and define the date window. Preferences are shown as counts, not averages. Trade-offs are named so the group can talk about them.',
-    'Options are ranked by fit per person, not by popularity. Options that break a constraint stay visible and are marked, so nobody wonders what was filtered out.',
-    'Love it / can live with it / can\'t do it. A "can\'t" is a veto, so the result is something everyone can accept, not just the majority. The minority view is kept.',
-    'The plan stays tentative until every traveller confirms. The assistant never confirms on anyone\'s behalf. Once confirmed, it is pinned in chat.'
+    'Trips start as a group chat like any other. The assistant only flags a group when it hears trip intent. Nothing else changes about how people chat.',
+    'Friends talk the way they already do. Limits and wishes come up in passing, which is exactly where they usually get lost.',
+    'The assistant drafts a trip brief from the chat: who, when, where, budget. Every line is editable and marked as a draft. Nothing starts until someone taps Start.',
+    'Everyone answers privately first: in or out, dates they can\'t do, a budget cap, vibe. Constraints and preferences are kept separate. Budget can stay private.',
+    'Hard constraints come first and define the date window. Preferences show as counts, not averages. Trade-offs are named so the group can talk about them.',
+    'Options are ranked by fit per person, not popularity. Options that break a constraint stay visible and marked, so nobody wonders what was filtered out.',
+    'Love it / can live with it / can\'t do it. A "can\'t" is a veto, so the result is something everyone accepts. The minority view is kept.',
+    'The plan stays tentative until every traveller confirms. Then it becomes a trip workspace: what is decided, what is next. The AI never confirms for anyone.'
   ];
   gsteps.innerHTML = TripRoom.STEPS.map((s, i) => `<li><i>0${i + 1}</i>${s}</li>`).join('');
   const syncGuide = (n) => {
