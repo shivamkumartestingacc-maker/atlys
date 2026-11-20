@@ -1,0 +1,516 @@
+<title>Atlys Design System</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: presentation board. 1) patterns seen in the 3 screen recordings, 2) one light app direction as 8 full screens, 3) two deck directions on the Navi structure. Single light board on purpose. */
+:root{
+  --paper:#F3F4F6; --ink:#0B0B0C; --muted:#5E616B; --line:#DFE0E5; --white:#FFFFFF; --indigo:#4F57E8;
+  --serif:"Newsreader","Iowan Old Style","Times New Roman",serif;
+  --sans:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:40px 80px}
+.wrap{max-width:1240px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+h1,h2{font-family:var(--serif);font-weight:500;letter-spacing:-.025em;text-wrap:balance;margin:0}
+h1{font-size:clamp(38px,5.5vw,64px);line-height:1.02}
+h2{font-size:clamp(26px,3vw,36px);line-height:1.08}
+p{margin:0;max-width:68ch}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+header{display:flex;flex-direction:column;gap:14px}
+header p{color:var(--muted);font-size:16.5px}
+.note-src{font-size:13px;color:var(--muted);border-left:2px solid var(--line);padding-left:12px}
+section{display:flex;flex-direction:column;gap:20px}
+.board{background:var(--white);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:22px}
+.board-top{display:flex;flex-wrap:wrap;gap:16px 32px;justify-content:space-between;align-items:flex-end}
+.board-top > div{display:flex;flex-direction:column;gap:6px;min-width:0;max-width:680px}
+.board-top p{color:var(--muted);font-size:14.5px}
+.tag{font-family:var(--mono);font-size:12px;background:var(--ink);color:var(--white);border-radius:999px;padding:4px 12px;align-self:flex-start}
+.traits{display:flex;flex-wrap:wrap;gap:6px;max-width:440px}
+.traits span{font-size:12px;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted)}
+.row{display:flex;gap:28px;overflow-x:auto;padding:4px 4px 12px}
+.col{display:flex;flex-direction:column;gap:10px;flex:none;width:376px}
+.cap{font-size:12.5px;color:var(--muted);line-height:1.4}
+.cap b{color:var(--ink);font-weight:600;display:block;font-size:13.5px}
+.pat{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.pt{border:1px solid var(--line);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.pt b{font-size:14px}
+.pt span{font-size:13px;color:var(--muted)}
+.pt i{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--indigo)}
+
+/* =================== PHONE (light) =================== */
+.phone{width:376px;height:780px;border-radius:48px;border:8px solid #111214;position:relative;overflow:hidden;
+  background:var(--bg);color:var(--ink1);font-family:var(--sans);font-size:14px;line-height:1.45;box-shadow:0 20px 50px rgba(15,17,30,.10)}
+.A{--bg:#FFFFFF;--gr:#F2F2F4;--sf:#F4F4F6;--ln:#E7E7EB;--ink1:#0B0B0C;--ink2:#3D4049;--mt:#7A7D86;--ac:#4F57E8;--acs:#EEF0FE;
+   --ok:#22A06B;--wr:#E5484D;--cta:#0B0B0C;--ctaf:#FFFFFF}
+.scroll{position:absolute;inset:0;overflow-y:auto;scrollbar-width:none;padding-bottom:110px}
+.scroll::-webkit-scrollbar{display:none}
+.sb{height:44px;display:flex;justify-content:space-between;align-items:center;padding:0 26px 0 30px;font-size:13px;font-weight:600;color:var(--ink1)}
+.sb.on-photo{position:absolute;top:0;left:0;right:0;color:#fff;z-index:6}
+.sb .ic{display:flex;gap:5px;align-items:center}
+.sb .bat{width:22px;height:11px;border:1.5px solid currentColor;border-radius:3px;position:relative}
+.sb .bat::after{content:"";position:absolute;inset:1.5px 5px 1.5px 1.5px;background:currentColor;border-radius:1px}
+.pad{padding:0 18px}
+.stack{display:flex;flex-direction:column}
+.g4{gap:4px}.g8{gap:8px}.g12{gap:12px}.g16{gap:16px}.g20{gap:20px}.g24{gap:24px}
+.hrow{display:flex;align-items:center;gap:10px}
+.sp{flex:1}
+.ttl{font-family:var(--serif);font-weight:500;letter-spacing:-.02em;line-height:1.08;margin:0}
+.t26{font-size:26px}.t30{font-size:30px}.t22{font-size:22px}
+.lbl{font-size:10.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--mt)}
+.mt{color:var(--mt)}.i2{color:var(--ink2)}
+.s11{font-size:11px}.s12{font-size:12px}.s13{font-size:13px}.s15{font-size:15px}.s16{font-size:16px}
+.w6{font-weight:600}.w5{font-weight:500}.w7{font-weight:700}
+.mono{font-family:var(--mono);letter-spacing:.08em}
+.u{text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--ln)}
+.center{text-align:center;align-items:center}
+.iconbtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--ln);flex:none;background:#fff}
+.iconbtn svg,.ico{width:18px;height:18px}
+.glassbtn{width:34px;height:34px;display:grid;place-items:center;color:#fff}
+.glassbtn svg{width:20px;height:20px}
+.btn{border-radius:999px;padding:14px 18px;text-align:center;font-weight:600;font-size:15px;background:var(--cta);color:var(--ctaf)}
+.btn.sm{padding:9px 14px;font-size:13px}
+.btn.ghost{background:#fff;color:var(--ink1);border:1px solid var(--ink1)}
+.btn.indigo{background:var(--ac);color:#fff}
+.btn.prism{background:linear-gradient(90deg,#DCD9FB,#EDBFB0 55%,#F6EDCB);color:var(--ink1)}
+.scene{display:block;width:100%;height:100%}
+/* home */
+.hero{position:relative;height:350px;overflow:hidden}
+.hero .shade{position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.18),rgba(0,0,0,0) 40%,rgba(0,0,0,.08))}
+.hero .over{position:absolute;inset:44px 0 0;display:flex;flex-direction:column;align-items:center;gap:14px;padding:0 18px}
+.toggle{position:absolute;right:16px;top:50px;background:#fff;border-radius:999px;padding:4px 12px 4px 4px;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.toggle i{width:20px;height:20px;border-radius:50%;background:#0B0B0C;display:block}
+.modes{display:flex;gap:18px;margin-top:6px}
+.modes div{display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff;font-size:11.5px;font-weight:500}
+.modes span{width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.modes .off{opacity:.65}.modes .off span{background:rgba(255,255,255,.35)}
+.modes .on b{border-bottom:2px solid #fff;font-weight:600}
+.hero h1{font-family:var(--serif);font-weight:500;color:#fff;font-size:27px;line-height:1.08;text-align:center;letter-spacing:-.02em;margin:4px 0 0;text-shadow:0 1px 12px rgba(0,0,0,.18)}
+.srow{display:flex;gap:10px;width:100%}
+.spill{flex:1;background:#fff;border-radius:999px;padding:12px 16px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--mt);font-size:14px}
+.fbtn{width:46px;height:46px;border-radius:50%;background:#fff;display:grid;place-items:center;position:relative;flex:none}
+.fbtn em{position:absolute;top:-3px;right:-3px;width:18px;height:18px;border-radius:50%;background:#0B0B0C;color:#fff;font-size:10px;font-style:normal;display:grid;place-items:center;font-weight:600}
+.loc{position:absolute;bottom:42px;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.22);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.45);color:#fff;border-radius:999px;padding:6px 12px;font-size:11.5px;white-space:nowrap}
+.sheet{background:var(--bg);border-radius:28px 28px 0 0;margin-top:-28px;position:relative;padding:18px 14px 0}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px}
+.cc{display:flex;flex-direction:column;gap:8px}
+.ccard{height:212px;border-radius:20px;overflow:hidden;position:relative;color:#fff}
+.ccard::after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,0) 35%,rgba(0,0,0,.45))}
+.ccard .nm{position:absolute;left:0;right:0;top:46%;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--serif);font-size:15px;letter-spacing:.02em;text-transform:uppercase;text-align:center;line-height:1.1}
+.ccard .vd{position:absolute;left:12px;right:12px;bottom:10px;z-index:2;display:flex;justify-content:space-between;font-size:10px;letter-spacing:.12em;font-weight:600;padding-top:8px;border-top:1px solid rgba(255,255,255,.3)}
+.ccard .vd span:first-child{opacity:.7}
+.flagc{width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;display:block}
+.vby{font-size:11px;line-height:1.35;padding:0 4px}
+.tabbar{position:absolute;left:14px;right:14px;bottom:16px;display:flex;align-items:center;gap:4px;background:#fff;border:1px solid var(--ln);border-radius:999px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.10);z-index:7}
+.tabbar i{flex:1;height:44px;display:grid;place-items:center;font-style:normal;color:var(--ink1)}
+.tabbar i svg{width:20px;height:20px}
+.tabbar .on{flex:1.8;background:var(--cta);color:var(--ctaf);border-radius:999px;font-size:13.5px;font-weight:600;display:flex;gap:8px;justify-content:center;align-items:center}
+.av{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#F4C9A8,#C97B5A);display:block}
+/* sheets */
+.dim{position:absolute;inset:0;background:rgba(11,11,12,.45);z-index:1}
+.bsheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:28px 28px 0 0;z-index:2;padding:10px 16px 22px;display:flex;flex-direction:column;gap:12px}
+.handle{width:38px;height:4px;border-radius:9px;background:var(--ln);align-self:center;margin-bottom:4px}
+.acc{border:1px solid var(--ln);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.acc .h{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.acc .h .k{color:var(--mt)}
+.acc .h .v{margin-left:auto;font-weight:600;display:flex;align-items:center;gap:6px}
+.ci{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;color:#fff;flex:none}
+.ci svg{width:12px;height:12px}
+.hol{background:#18191C;color:#fff;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+.hol .stack{flex:1}
+.hol .lb{font-size:9.5px;letter-spacing:.14em;opacity:.55;font-weight:600}
+.hol .ar{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.12);display:grid;place-items:center}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);row-gap:4px;text-align:center;font-size:12.5px}
+.cal .dw{font-size:11px;color:var(--mt);padding-bottom:4px}
+.cal span{height:32px;display:grid;place-items:center;position:relative}
+.cal .x{color:#C9CBD1}
+.cal .td span,.cal .td{}
+.cal .today i{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--ink1);display:grid;place-items:center;font-style:normal}
+.cal .sel i{width:30px;height:30px;border-radius:50%;background:var(--ink1);color:#fff;display:grid;place-items:center;font-style:normal}
+.cal .rg{background:#ECECEF}
+.cal .rs{border-radius:999px 0 0 999px}.cal .re{border-radius:0 999px 999px 0}
+/* visa page */
+.vhero{height:170px;position:relative;overflow:hidden}
+.vhero .tools{position:absolute;top:48px;left:12px;right:12px;display:flex;justify-content:space-between;z-index:3}
+.vsheet{background:#fff;border-radius:24px 24px 0 0;margin-top:-24px;position:relative;padding:16px 16px 0}
+.vt{display:flex;align-items:center;gap:8px}
+.vt .fl{width:26px;height:26px;border-radius:50%;flex:none}
+.vt b{font-size:20px;font-weight:700;letter-spacing:-.02em}
+.tabs{display:flex;gap:16px;border-bottom:1px solid var(--ln);margin:12px -16px 0;padding:0 16px;font-size:12.5px;color:var(--mt);white-space:nowrap;overflow:hidden}
+.tabs span{padding:8px 0}
+.tabs .on{color:var(--ink1);font-weight:600;border-bottom:2px solid var(--ink1)}
+.kv2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.kv2 div{display:flex;flex-direction:column;gap:1px}
+.range{display:flex;flex-direction:column;gap:6px}
+.range .bar{height:30px;border-radius:8px;background:linear-gradient(90deg,#5960EA,#7C83F4);position:relative}
+.range .bar i{position:absolute;left:2px;top:2px;bottom:2px;width:26px;border-radius:6px;background:#fff;display:grid;place-items:center;color:var(--ac)}
+.gcard{background:var(--sf);border-radius:18px;padding:6px 14px}
+.fr{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid var(--ln);font-size:13.5px}
+.fr:last-child{border-bottom:0}
+.fr svg{width:16px;height:16px;flex:none}
+.step{display:flex;align-items:center;gap:10px}
+.step b{width:24px;height:24px;border-radius:50%;border:1px solid var(--ln);display:grid;place-items:center;font-weight:500;background:#fff;font-size:14px}
+.vdock{position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--ln);padding:12px 16px 24px;display:flex;align-items:center;gap:12px;z-index:5}
+.vdock .stack{flex:1}
+.ontime{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink1)}
+.ontime svg{width:14px;height:14px;color:var(--ac)}
+.vdock .btn{padding:13px 26px}
+.bars{display:flex;flex-direction:column;gap:9px}
+.br{display:grid;grid-template-columns:1fr 84px 42px;gap:10px;align-items:center;font-size:12.5px}
+.br .t{height:8px;border-radius:9px;background:#EEEFF2;overflow:hidden}
+.br .t i{display:block;height:100%;border-radius:9px;background:var(--ok)}
+.br.red .t i{background:#F2A7A9}
+.br em{font-style:normal;text-align:right;font-weight:600}
+.br.red em{color:var(--wr)}
+.big{font-family:var(--serif);font-size:40px;font-weight:500;letter-spacing:-.02em;line-height:1}
+.wcard{background:#fff;border:1px solid var(--ln);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.rv{display:flex;gap:10px;overflow:hidden;margin-right:-16px}
+.rv .wcard{flex:0 0 220px;gap:8px}
+.rav{width:34px;height:34px;border-radius:50%;flex:none}
+/* photo capture */
+.dashes{display:flex;gap:4px;justify-content:center}
+.dashes i{width:14px;height:3px;border-radius:9px;background:var(--ln)}
+.dashes i.f{width:22px;background:var(--ink1)}
+.orb{width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#8EC5FF 40%,#3A6FD8 75%);flex:none;display:inline-block}
+.listchip{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:6px 12px;font-size:12px;color:var(--ink2);background:#fff;border:1px solid var(--ln)}
+.cam{width:250px;height:250px;border-radius:50%;margin:0 auto;position:relative;background:radial-gradient(circle at 50% 40%,#F6EDE2,#E9DCCB 60%,#D9CAB6);overflow:visible}
+.cam .face{position:absolute;left:50%;top:26%;width:90px;height:110px;border-radius:50% 50% 46% 46%;transform:translateX(-50%);background:#B98463}
+.cam .hair{position:absolute;left:50%;top:21%;width:98px;height:56px;border-radius:50px 50px 18px 18px;transform:translateX(-50%);background:#2B201A}
+.cam .body{position:absolute;left:50%;bottom:0;width:190px;height:70px;border-radius:95px 95px 0 0;transform:translateX(-50%);background:#3D4A63;clip-path:circle(125px at 50% -55px)}
+.cam .ring{position:absolute;inset:-6px;border-radius:50%;border:3px solid var(--ok)}
+.cam .flip{position:absolute;right:6px;top:10px;width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.12);display:grid;place-items:center}
+.gal{width:52px;height:52px;border-radius:50%;border:1px solid var(--ln);display:grid;place-items:center;margin:0 auto}
+/* tracker */
+.tl{display:flex;flex-direction:column}
+.st{display:flex;gap:14px;position:relative;padding-bottom:18px}
+.st:not(:last-child)::before{content:"";position:absolute;left:10px;top:24px;bottom:2px;width:1.5px;background:var(--ln)}
+.st.done:not(:last-child)::before{background:var(--ink1)}
+.dot{width:21px;height:21px;border-radius:50%;border:1.5px solid var(--ln);background:#fff;flex:none;display:grid;place-items:center}
+.dot svg{width:11px;height:11px}
+.st.done .dot{background:var(--ink1);border-color:var(--ink1);color:#fff}
+.st.now .dot{border:6px solid var(--ac)}
+.st .t{display:flex;flex-direction:column;gap:1px}
+.pass{border-radius:22px;background:#0E0F12;color:#F2F2F3;padding:18px;display:flex;flex-direction:column;gap:14px;position:relative;overflow:hidden}
+.pass .brand{font-size:12.5px;opacity:.55;display:flex;align-items:center;gap:6px}
+.globe{position:absolute;right:-30px;bottom:-40px;width:170px;height:170px;border-radius:50%;
+  background:radial-gradient(circle,#9FB3D9 1px,transparent 1.5px) 0 0/6px 6px;opacity:.35;
+  -webkit-mask:radial-gradient(circle at 40% 40%,#000 52%,transparent 72%);mask:radial-gradient(circle at 40% 40%,#000 52%,transparent 72%)}
+/* profile */
+.pcard{border-radius:26px;padding:16px 18px;display:flex;flex-direction:column;gap:12px;position:relative;overflow:hidden}
+.pcard .hd{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;letter-spacing:.14em}
+.pcard .hd svg{width:15px;height:15px}
+.pcard hr{border:0;border-top:1px solid currentColor;opacity:.15;margin:0;width:100%}
+.trips{background:linear-gradient(170deg,#03050C 30%,#12324F);color:#fff}
+.vault{background:conic-gradient(from 210deg at 70% 55%,#E9EBEF,#B9BDC4,#F4F5F7,#A8ACB4,#E2E4E8,#C3C6CC,#E9EBEF);color:#0B0B0C}
+.ftrack{background:#0B0B0C;color:#fff}
+.ftrack .elig{margin-left:auto;background:#22A06B;color:#fff;border-radius:999px;padding:2px 8px;font-size:10.5px;letter-spacing:0}
+.dial{position:absolute;right:22px;top:58px;width:84px;height:84px;border-radius:50%;background:repeating-conic-gradient(#8E929A 0 4deg,transparent 4deg 12deg);-webkit-mask:radial-gradient(circle,transparent 28px,#000 29px 40px,transparent 41px);mask:radial-gradient(circle,transparent 28px,#000 29px 40px,transparent 41px)}
+.dial2{position:absolute;right:48px;top:84px;width:32px;height:32px;border-radius:50%;background:radial-gradient(circle,#555 4px,#D8DADF 5px 15px,#9A9EA6 16px)}
+/* questionnaire */
+.qopt{border:1px dashed #BFC1C8;border-radius:999px;padding:11px;text-align:center;font-size:14px;font-weight:500}
+.qopt.on{background:var(--ink1);color:#fff;border:1px solid var(--ink1)}
+.toast{background:#18191C;color:#fff;border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+/* ---- v4: real imagery + prism ---- */
+.prism{background:linear-gradient(90deg,#2E3192,#6C4BD8 30%,#D9486B 62%,#EE8A4F 82%,#E9B949);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn.prism{background:linear-gradient(90deg,#D9D6FB,#E9C7DE 40%,#F0BBA4 70%,#F6EDCB);color:#0B0B0C}
+.imgfill{display:block;width:100%;height:auto}
+.rhero{position:relative}
+.rhero img{display:block;width:100%}
+.rhero .sb{position:absolute;top:0;left:0;right:0;color:#fff;background:linear-gradient(rgba(0,0,0,.18),transparent)}
+.rcard{display:flex;flex-direction:column;gap:8px}
+.rcard img{width:100%;border-radius:20px;display:block;aspect-ratio:242/386;object-fit:cover}
+.aurora{position:absolute;inset:0 0 auto;height:330px;pointer-events:none;
+  background:radial-gradient(40% 60% at 20% 0%,rgba(226,140,190,.55),transparent 70%),radial-gradient(40% 60% at 55% 5%,rgba(160,150,250,.55),transparent 70%),radial-gradient(35% 55% at 85% 0%,rgba(250,200,140,.6),transparent 70%),radial-gradient(50% 40% at 50% 30%,rgba(140,200,255,.35),transparent 70%);filter:blur(10px)}
+.wp{width:190px;border-radius:22px;background:#0E0F12;color:#F2F2F3;padding:16px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;margin:0 auto}
+.wp .brand{font-size:13px;opacity:.45;display:flex;gap:6px;align-items:center}
+.wp .g{width:110px;height:110px;margin:4px auto;border-radius:50%;background:radial-gradient(circle,#9FB3D9 1px,transparent 1.5px) 0 0/5px 5px;opacity:.45;-webkit-mask:radial-gradient(circle at 40% 40%,#000 52%,transparent 72%);mask:radial-gradient(circle at 40% 40%,#000 52%,transparent 72%)}
+.wp .nm{text-align:center;font-weight:500}
+.wp .no{font-family:var(--mono);letter-spacing:.14em;font-size:12px;opacity:.35;text-align:center;border-top:1px solid rgba(255,255,255,.12);padding-top:10px}
+.cm{position:relative;padding:18px 0}
+.cm::before{content:"";position:absolute;left:30px;right:30px;top:0;bottom:0;border-left:1px dashed #B9BBC3;border-right:1px dashed #B9BBC3}
+.cm::after{content:"";position:absolute;left:14px;right:14px;top:10px;bottom:10px;border-top:1px dashed #B9BBC3;border-bottom:1px dashed #B9BBC3}
+.story{display:flex;flex-direction:column;gap:22px}
+.sr{display:flex;gap:16px;align-items:flex-start}
+.sr img{width:44px;height:44px;border-radius:50%;flex:none}
+.sr .t{display:flex;flex-direction:column;gap:3px}
+.sr .t b{font-size:15px;font-weight:600}
+.sr .t span{font-size:13px;color:var(--mt);line-height:1.4}
+.sr.on img{width:62px;height:62px;box-shadow:0 0 0 8px #fff,0 0 0 9px var(--ln)}
+.sr.on .t span{color:var(--ink1);font-weight:500}
+.sr.dim{opacity:.45}
+.daycal{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;text-align:center;font-size:12.5px}
+.daycal span{height:34px;border-radius:8px;display:grid;place-items:center;position:relative}
+.daycal .ok{background:#E9F6F0}
+.daycal .ok::after{content:"";position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:#22A06B}
+.daycal .no{background:#FDECEC}
+.daycal .no::after{content:"";position:absolute;bottom:5px;width:4px;height:4px;border-radius:50%;background:#E5484D}
+.daycal .td{border:1.5px solid var(--ink1)}
+.daycal .pick{background:var(--ac);color:#fff;font-weight:600}
+.fc{display:grid;grid-template-columns:86px 1fr 40px;gap:10px;align-items:center;font-size:12.5px}
+.fc .t{height:10px;border-radius:9px;background:#EEEFF4;overflow:hidden}
+.fc .t i{display:block;height:100%;background:#3D44C9;border-radius:9px}
+.fc em{font-style:normal;text-align:right;font-weight:600}
+.evm{text-align:center;font-weight:600;font-size:15px}
+.evm span{color:var(--mt);font-weight:400}
+.pbar{height:5px;border-radius:9px;background:var(--ln);overflow:hidden}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,#2E3192,#6C4BD8 30%,#D9486B 62%,#EE8A4F 82%,#E9B949);border-radius:9px}
+/* ---- system board ---- */
+.sysgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:16px}
+.blk{border:1px solid var(--line);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px;min-width:0;background:#fff}
+.blk h3{margin:0;font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.sw2{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:10px}
+.sw2 div{display:flex;flex-direction:column;gap:4px;font-size:11.5px;color:var(--muted)}
+.sw2 i{height:52px;border-radius:14px;display:block;border:1px solid rgba(0,0,0,.06)}
+.sw2 b{color:var(--ink);font-size:12px;font-weight:600}
+.tsc{display:flex;flex-direction:column;gap:10px}
+.tsc div{display:flex;align-items:baseline;gap:14px;border-bottom:1px solid #F0F0F3;padding-bottom:8px;min-width:0}
+.tsc span.k{font-family:var(--mono);font-size:11px;color:var(--muted);width:92px;flex:none}
+.rads{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.rads div{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-family:var(--mono)}
+.rads i{width:56px;height:56px;background:#F2F2F4;border:1px solid #E4E4E8;display:block}
+.cmp{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.cmp .lab{width:100%;font-size:11px;color:var(--muted);font-family:var(--mono)}
+.rule{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px;margin:0;padding-left:18px}
+.chipf{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:6px 12px 6px 6px;background:#fff;border:1px solid var(--ln);font-size:13px;font-weight:500}
+.chipf.on{background:#0B0B0C;color:#fff;border-color:#0B0B0C}
+.chipf .ci{width:20px;height:20px}
+.st2{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:600}
+.st2.ok{background:#E9F6F0;color:#178556}.st2.wa{background:#FDF1E7;color:#B4531A}.st2.in{background:#EEF0FE;color:#3D44C9}.st2.er{background:#FDECEC;color:#C8363B}
+.st2 i{width:6px;height:6px;border-radius:50%;background:currentColor}
+.field{display:flex;flex-direction:column;gap:6px;min-width:150px;flex:1}
+.field label{font-size:10.5px;font-weight:700;letter-spacing:.1em}
+.field .in{border-bottom:1.5px dotted #BFC1C8;padding:6px 0;font-size:14px}
+.field .in.e{border-color:#E5484D}
+.field .err{font-size:11px;color:#E5484D}
+.otp2{display:flex;gap:6px}.otp2 b{width:38px;height:44px;border-radius:12px;background:#4F57E8;color:#fff;display:grid;place-items:center;font-size:16px;box-shadow:0 6px 14px rgba(79,87,232,.3)}
+.otp2 b.e{background:#fff;border:1.5px solid #E7E7EB;color:#0B0B0C;box-shadow:none}
+.skel{border-radius:16px;background:linear-gradient(90deg,#EEEFF2,#F7F7F9,#EEEFF2);background-size:200% 100%;animation:sh 1.4s linear infinite}
+@keyframes sh{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skel{animation:none}}
+.toast2{background:#18191C;color:#fff;border-radius:16px;padding:12px 14px;display:flex;gap:10px;align-items:center;font-size:13px}
+.toast2 .u2{margin-left:auto;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.motion{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.motion div{border:1px solid #F0F0F3;border-radius:14px;padding:12px;font-size:12.5px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
+.motion b{color:var(--ink);font-size:13px}
+.motion code{font-family:var(--mono);font-size:11px;color:var(--indigo)}
+.thumbs{width:40px;height:50px;border-radius:8px;flex:none;background:#E9EBF0;position:relative;overflow:hidden}
+.trow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--ln)}
+.trow:last-child{border-bottom:0}
+.tav{width:40px;height:40px;border-radius:50%;flex:none;display:grid;place-items:center;font-weight:600}
+.stamp{position:absolute;right:14px;top:56px;transform:rotate(-12deg);border:2px solid #22A06B;color:#22A06B;border-radius:10px;padding:4px 8px;font:700 11px/1.2 var(--mono);letter-spacing:.1em;text-align:center;background:rgba(255,255,255,.04)}
+.perks{display:flex;gap:10px;overflow:hidden;margin-right:-18px}
+.perk{flex:0 0 138px;border-radius:18px;padding:12px;display:flex;flex-direction:column;gap:6px;min-height:120px;position:relative;overflow:hidden}
+.ck{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;flex:none}
+.ck.d{background:#0B0B0C;color:#fff}.ck.o{border:1.5px dashed #BFC1C8}
+.ck svg{width:11px;height:11px}
+.odds{display:flex;align-items:flex-end;gap:10px}
+.odds .big{font-size:56px}
+.up{font-size:12px;font-weight:600;color:#178556;background:#E9F6F0;border-radius:999px;padding:3px 8px;margin-bottom:10px}
+</style>
+<style>
+.A{--bg:#FFFFFF;--sf:#F5F6F8;--ln:#ECEDF0}
+.phone.A{background:#fff !important}
+.A .wcard{background:#F5F6F8;border:0;border-radius:20px}
+.A .gcard{background:#F5F6F8}
+.A .trow{border-bottom-color:#E6E7EB}
+.A .aurora{display:none}
+.A .ttl.t30{font-size:32px;line-height:1.02}
+.A .iconbtn{border-color:#ECEDF0}
+</style>
+<div class="wrap">
+<header>
+  <span class="eyebrow">Atlys · design system v1 · light</span>
+  <h1>One system, <span class="prism">six new screens</span></h1>
+  <p>Foundations and components pulled from the Atlys app, then used to design screens that don't exist in the app today: a multi-traveller trip hub, a document fix, a pre-submit check, approval, a day-before checklist and the document vault.</p>
+  <p class="note-src">Destination photos, orbs and the perk card are cropped from the Atlys recordings. Names, prices, dates and odds are sample content.</p>
+</header>
+
+<!-- ============ FOUNDATIONS ============ -->
+<section>
+  <div class="board">
+    <div class="board-top"><div><span class="tag">01 · Foundations</span><h2>Tokens</h2></div></div>
+    <div class="sysgrid">
+      <div class="blk"><h3>Colour · neutrals</h3><div class="sw2">
+        <div><i style="background:#FFFFFF"></i><b>Surface</b>#FFFFFF</div><div><i style="background:#F2F2F4"></i><b>Ground</b>#F2F2F4</div><div><i style="background:#E7E7EB"></i><b>Line</b>#E7E7EB</div>
+        <div><i style="background:#7A7D86"></i><b>Muted</b>#7A7D86</div><div><i style="background:#3D4049"></i><b>Ink 2</b>#3D4049</div><div><i style="background:#0B0B0C"></i><b>Ink</b>#0B0B0C</div></div></div>
+      <div class="blk"><h3>Colour · accents</h3><div class="sw2">
+        <div><i style="background:#4F57E8"></i><b>Indigo</b>Start now, selected</div><div><i style="background:#22A06B"></i><b>Green</b>approved, good odds</div><div><i style="background:#E8833A"></i><b>Orange</b>needs action</div>
+        <div><i style="background:#E5484D"></i><b>Red</b>error, rejection</div><div><i style="background:linear-gradient(170deg,#03050C 30%,#12324F)"></i><b>Navy</b>trips card</div><div><i style="background:conic-gradient(from 210deg,#E9EBEF,#B9BDC4,#F4F5F7,#A8ACB4,#E9EBEF)"></i><b>Steel</b>vault card</div></div></div>
+      <div class="blk"><h3>Prism · the Atlys signature</h3>
+        <i style="height:52px;border-radius:14px;background:linear-gradient(90deg,#2E3192,#6C4BD8 30%,#D9486B 62%,#EE8A4F 82%,#E9B949);display:block"></i>
+        <i style="height:40px;border-radius:999px;background:linear-gradient(90deg,#D9D6FB,#E9C7DE 40%,#F0BBA4 70%,#F6EDCB);display:block"></i>
+        <ul class="rule"><li>Deep prism: one headline phrase or highlight per screen.</li><li>Pastel prism: worldpass and activation buttons only.</li><li>Never on body text, icons or data.</li></ul></div>
+      <div class="blk"><h3>Type</h3><div class="tsc">
+        <div><span class="k">Display 40</span><span style="font-family:var(--serif);font-size:40px;letter-spacing:-.02em;line-height:1">You're going</span></div>
+        <div><span class="k">Title 28 serif</span><span style="font-family:var(--serif);font-size:28px;letter-spacing:-.02em">Price details</span></div>
+        <div><span class="k">Name 20 bold</span><span style="font-size:20px;font-weight:700;letter-spacing:-.02em">Vietnam Visa</span></div>
+        <div><span class="k">Body 15</span><span style="font-size:15px">Taken once. Used for every visa after.</span></div>
+        <div><span class="k">Label 11 caps</span><span style="font-size:11px;font-weight:600;letter-spacing:.14em">RIYA'S DOCUMENT VAULT</span></div>
+        <div><span class="k">Mono 12</span><span style="font-family:var(--mono);font-size:12px;letter-spacing:.14em">3060 6272 0403</span></div></div></div>
+      <div class="blk"><h3>Radius · spacing · elevation</h3>
+        <div class="rads"><div><i style="border-radius:8px"></i>8 field</div><div><i style="border-radius:14px"></i>14 chip box</div><div><i style="border-radius:20px"></i>20 photo</div><div><i style="border-radius:28px"></i>28 sheet</div><div><i style="border-radius:999px;width:84px"></i>pill</div></div>
+        <ul class="rule"><li>Spacing on a 4pt grid: 4, 8, 12, 16, 20, 24, 32.</li><li>Screen gutter 18. Card padding 16–18.</li><li>Flat by default. Shadow only on floating things: tab bar, filter button, OTP boxes.</li></ul></div>
+      <div class="blk"><h3>Motion</h3><div class="motion">
+        <div><b>Sheet up</b>Slides over the photo, hero dims.<code>320ms · ease-out</code></div>
+        <div><b>Hero collapse</b>Photo scales down and fades on scroll.<code>scroll-linked</code></div>
+        <div><b>Story focus</b>Active line grows its orb; others fade to 45%.<code>400ms · spring</code></div>
+        <div><b>Type on card</b>Name types onto worldpass.<code>40ms / char</code></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMPONENTS ============ -->
+<section>
+  <div class="board A">
+    <div class="board-top"><div><span class="tag">02 · Components</span><h2>Building blocks</h2></div></div>
+    <div class="sysgrid">
+      <div class="blk"><h3>Buttons</h3>
+        <div class="cmp"><span class="lab">primary · black pill</span><span class="btn" style="flex:1">Continue</span></div>
+        <div class="cmp"><span class="lab">transaction · indigo</span><span class="btn indigo" style="flex:1">Start now</span></div>
+        <div class="cmp"><span class="lab">activation · pastel prism</span><span class="btn prism" style="flex:1">Confirm Details &amp; Activate Benefits</span></div>
+        <div class="cmp"><span class="lab">secondary · outline · text link · disabled</span><span class="btn ghost sm">Clear Filters</span><span class="s13 u" style="text-decoration-color:currentColor;font-weight:500">I don't want any benefits</span><span class="btn sm" style="opacity:.3">Next</span></div></div>
+      <div class="blk"><h3>Chips &amp; status</h3>
+        <div class="cmp"><span class="lab">filter chips</span><span class="chipf on">All Events</span><span class="chipf"><span class="ci" style="background:#22A06B"><svg viewBox="0 0 24 24" fill="#fff"><path d="M9 18V6l10-2v12"/></svg></span>Music</span><span class="chipf"><span class="ci" style="background:#E2508E"><svg viewBox="0 0 24 24" fill="#fff"><circle cx="12" cy="12" r="5"/></svg></span>Sports</span></div>
+        <div class="cmp"><span class="lab">status</span><span class="st2 ok"><i></i>Approved</span><span class="st2 in"><i></i>Under review</span><span class="st2 wa"><i></i>Needs 1 document</span><span class="st2 er"><i></i>Rejected</span></div>
+        <div class="cmp"><span class="lab">mode toggle · location · list chip</span><span class="chipf" style="padding:4px 12px 4px 4px"><i style="width:22px;height:22px;border-radius:50%;background:#0B0B0C;display:block"></i>Tourist</span><span class="chipf" style="background:#5A8FB0;color:#fff;border-color:rgba(255,255,255,.5)">◎ Ha Long Bay, Vietnam</span><span class="listchip"><span class="orb"></span>What this takes off your <b>list</b> ›</span></div></div>
+      <div class="blk"><h3>Inputs</h3>
+        <div class="cmp"><span class="lab">search pill + filter</span><div class="srow"><div class="spill" style="border:1px solid var(--ln)"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>Search Country</div><div class="fbtn" style="border:1px solid var(--ln)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B0B0C" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"/></svg><em>1</em></div></div></div>
+        <div class="cmp"><span class="lab">underline fields · error</span><div class="field"><label>FIRST NAME*</label><div class="in">Riya</div></div><div class="field"><label>PASSPORT NUMBER*</label><div class="in e mt">Type here</div><span class="err">This field is required</span></div></div>
+        <div class="cmp"><span class="lab">OTP</span><div class="otp2"><b>2</b><b>2</b><b>9</b><b>6</b><b class="e"></b><b class="e"></b></div></div></div>
+      <div class="blk"><h3>Cards</h3>
+        <div class="cmp"><span class="lab">photo card · white card · material card</span>
+          <img src="img/card-vietnam.jpg" style="width:92px;border-radius:16px" alt="Vietnam card">
+          <div class="wcard" style="flex:1;min-width:150px;gap:6px"><span class="w6 s13">Visa arrival forecast</span><div class="fc" style="grid-template-columns:60px 1fr 34px"><span class="s11">6 days</span><span class="t"><i style="width:45%"></i></span><em class="s11">45%</em></div><div class="fc" style="grid-template-columns:60px 1fr 34px"><span class="s11">5 days</span><span class="t"><i style="width:20%"></i></span><em class="s11">20%</em></div></div></div>
+        <div class="cmp"><div class="wp" style="width:150px;margin:0;padding:12px;gap:6px"><span class="brand" style="font-size:11px">+ atlys worldpass</span><div class="g" style="width:70px;height:70px"></div><div class="nm s13">Riya</div><div class="no" style="font-size:10px;padding-top:6px">3060 6272 0403</div></div>
+          <div class="pcard trips" style="flex:1;min-width:150px;padding:14px"><div class="hd" style="font-size:10px">✈ RIYA'S TRIPS</div><div class="hrow" style="gap:20px"><div class="stack"><span style="font-size:22px">2</span><span class="s11" style="opacity:.5">Countries</span></div><div class="stack"><span style="font-size:22px">1%</span><span class="s11" style="opacity:.5">World</span></div></div></div></div></div>
+      <div class="blk"><h3>Navigation</h3>
+        <div class="cmp"><span class="lab">floating tab bar</span><div class="tabbar" style="position:static;width:100%"><i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 2.5L13 21z"/></svg></i><i class="on"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg>Home</i><i><span class="av"></span></i></div></div>
+        <div class="cmp"><span class="lab">underline tabs</span><div class="tabs" style="margin:0;width:100%;padding:0"><span>Price</span><span>Documents</span><span class="on">Timeline</span><span>Approval intelligence</span></div></div>
+        <div class="cmp"><span class="lab">round buttons · step dashes</span><span class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></span><span class="iconbtn" style="background:#0B0B0C;color:#fff;border:0;width:52px;height:52px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M7 12h10M10 17h4"/></svg></span><div class="dashes"><i class="f"></i><i class="f"></i><i></i></div></div></div>
+      <div class="blk"><h3>Feedback</h3>
+        <div class="cmp"><span class="lab">toast</span><div class="toast2" style="width:100%"><svg width="16" height="16" viewBox="0 0 24 24" fill="#C9A15A"><rect x="3" y="7" width="18" height="13" rx="2"/></svg>Statement saved to your vault<span class="u2">Undo</span></div></div>
+        <div class="cmp"><span class="lab">skeleton</span><div class="hrow" style="width:100%"><div class="skel" style="width:40px;height:50px;border-radius:8px"></div><div class="stack g8" style="flex:1"><div class="skel" style="height:12px;width:70%"></div><div class="skel" style="height:10px;width:45%"></div></div></div></div>
+        <div class="cmp"><span class="lab">progress · prism bar</span><div class="pbar" style="width:100%"><i style="width:62%"></i></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEW SCREENS ============ -->
+<section>
+  <div class="board">
+    <div class="board-top"><div><span class="tag">03 · New screens</span><h2>Vietnam with family, start to finish</h2><p>Six screens that don't exist in the Atlys app today. A family of three applies for Indonesia visas: one traveller hits a document problem, they fix it from the vault, check the odds, get approved and get ready to fly. Every element comes from the system above.</p></div></div>
+    <div class="row">
+
+<!-- N1 TRIP HUB -->
+<div class="col"><div class="phone A"><div class="scroll">
+  <div class="sb-slot"></div>
+  <div class="pad stack g20" style="padding-top:6px">
+    <div class="hrow"><span class="lbl">Your trips</span><span class="sp"></span><span class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 9a6 6 0 0 1 12 0c0 6 2 7 2 7H4s2-1 2-7"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span></div>
+    <h1 class="ttl t30">Vietnam, <span class="prism">in 18 days</span></h1>
+    <div class="cm" style="padding:14px 0"><div style="position:relative;border-radius:24px;overflow:hidden;height:170px;margin:0 6px"><img src="img/hero-home.jpg" style="width:100%;height:100%;object-fit:cover;object-position:50% 86%;display:block" alt="Ha Long Bay"><div style="position:absolute;inset:auto 0 0;padding:14px 16px;background:linear-gradient(transparent,rgba(0,0,0,.55));color:#fff;display:flex;align-items:flex-end;gap:8px"><div class="stack"><span class="w6 s16">Vietnam · e-Visa</span><span class="s12" style="opacity:.8">8 Dec – 15 Dec · 3 travellers</span></div></div></div></div>
+    <div class="stack g8"><div class="hrow"><span class="w6 s16">Travellers</span><span class="sp"></span><span class="s13 mt">2 of 3 done</span></div><div class="pbar"><i style="width:66%"></i></div></div>
+    <div class="wcard" style="padding:4px 16px;gap:0">
+      <div class="trow"><span class="tav" style="background:#EEEAFE;color:#7A5AD8">R</span><div class="stack" style="flex:1"><span class="w6">Riya</span><span class="s12 mt">Visa issued · 26 Nov</span></div><span class="st2 ok"><i></i>Approved</span></div>
+      <div class="trow"><span class="tav" style="background:#FDF1E7;color:#B4531A">A</span><div class="stack" style="flex:1"><span class="w6">Arjun</span><span class="s12" style="color:#B4531A">Bank statement is 4 months old</span></div><span class="btn sm">Fix</span></div>
+      <div class="trow"><span class="tav" style="background:#EEF0FE;color:#3D44C9">M</span><div class="stack" style="flex:1"><span class="w6">Maya, 7</span><span class="s12 mt">With immigration · usually 2 days</span></div><span class="st2 in"><i></i>In review</span></div>
+    </div>
+    <span class="ontime s13"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/></svg>All visas by 4 Dec · On time, <span class="u" style="text-decoration-color:currentColor">or free</span></span>
+  </div></div><div class="tabbar-slot"></div></div>
+  <div class="cap"><b>1 · Trip hub</b>One trip, many travellers. Each row shows its own status; only the blocked one gets a button.</div></div>
+
+<!-- N2 FIX DOCUMENT -->
+<div class="col"><div class="phone A"><div class="sb-slot"></div>
+  <div class="pad stack g12" style="opacity:.35;padding-top:10px"><h1 class="ttl t30">Vietnam, in 18 days</h1><img src="img/hero-home.jpg" style="height:170px;width:100%;object-fit:cover;object-position:50% 86%;border-radius:24px" alt=""></div>
+  <div class="dim" style="background:rgba(11,11,12,.4)"></div>
+  <div class="bsheet" style="gap:16px;padding-bottom:26px"><div class="handle"></div>
+    <div class="stack g8"><span class="st2 wa" style="align-self:flex-start"><i></i>Needs 1 document</span><h2 class="ttl t26">Arjun's bank statement</h2><span class="s13 i2">Vietnam asks for the last 3 months. The one we have ends in July.</span></div>
+    <div class="stack g8">
+      <div class="wcard" style="border-color:#0B0B0C;border-width:1.5px;flex-direction:row;align-items:center;gap:12px;padding:14px"><div class="pcard vault" style="width:44px;height:44px;border-radius:12px;padding:0;flex:none"></div><div class="stack" style="flex:1"><span class="w6 s15">Use one from the vault</span><span class="s12 mt">HDFC · Aug – Oct 2026 · saved 2 Nov</span></div><span class="ck d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="m5 12 5 5 9-10"/></svg></span></div>
+      <div class="wcard" style="flex-direction:row;align-items:center;gap:12px;padding:14px"><span class="sq" style="width:44px;height:44px;border-radius:12px;background:#F4F4F6;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4"/></svg></span><div class="stack" style="flex:1"><span class="w6 s15">Upload a new PDF</span><span class="s12 mt">Up to 10 MB</span></div><span class="ck o"></span></div>
+      <div class="wcard" style="flex-direction:row;align-items:center;gap:12px;padding:14px"><span class="sq" style="width:44px;height:44px;border-radius:12px;background:#F4F4F6;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12v7h16v-7M12 3v12M8 7l4-4 4 4"/></svg></span><div class="stack" style="flex:1"><span class="w6 s15">Ask Arjun to add it</span><span class="s12 mt">Sends him a WhatsApp link</span></div><span class="ck o"></span></div>
+    </div>
+    <div class="btn">Use from vault</div>
+  </div></div>
+  <div class="cap"><b>2 · Fix a document</b>Bottom sheet over the hub. The vault answer is pre-selected, so the fix takes one tap.</div></div>
+
+<!-- N3 PRE-SUBMIT -->
+<div class="col"><div class="phone A"><div class="scroll" style="padding-bottom:130px">
+  <div class="sb-slot"></div>
+  <div class="pad stack g20" style="padding-top:6px">
+    <div class="hrow"><span class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></span><span class="sp"></span><div class="dashes"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></div><span class="sp"></span><span style="width:40px"></span></div>
+    <div class="stack g8"><span class="lbl">Last check · Arjun</span><h1 class="ttl t30">Ready for immigration</h1></div>
+    <div class="wcard"><span class="w6 s13">Approval chances</span><div class="odds"><span class="big">94%</span><span class="up">↑ 6% after the fix</span></div>
+      <div class="bars"><div class="br"><span>Passport valid 6+ months</span><span class="t"><i style="width:100%"></i></span><em>✓</em></div><div class="br"><span>Statement within 3 months</span><span class="t"><i style="width:100%"></i></span><em>✓</em></div><div class="br"><span>Return flight booked</span><span class="t"><i style="width:100%"></i></span><em>✓</em></div><div class="br"><span>Photo matches rules</span><span class="t"><i style="width:100%"></i></span><em>✓</em></div></div></div>
+    <div class="gcard"><div class="fr"><span class="mt">Traveller</span><span class="sp"></span><span class="w6">Arjun Sharma</span></div><div class="fr"><span class="mt">Arrive</span><span class="sp"></span><span class="w6">8 Dec 2026</span></div><div class="fr"><span class="mt">Visa type</span><span class="sp"></span><span class="w6">e-Visa · 90 days</span></div><div class="fr"><span class="mt">Fees</span><span class="sp"></span><span class="w7">₹3,720</span></div></div>
+  </div></div>
+  <div class="vdock"><div class="stack g4"><span class="s13">Visa on 2 Dec, 6:10 pm</span><span class="ontime"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/></svg>On time, <span class="u" style="text-decoration-color:currentColor">or free</span></span></div><div class="btn indigo">Submit</div></div>
+  </div><div class="cap"><b>3 · Pre-submit check</b>Approval intelligence turned into a checklist for this one application, with the gain from the fix.</div></div>
+
+<!-- N4 APPROVED -->
+<div class="col"><div class="phone A"><div class="scroll" style="padding-bottom:40px">
+  <div class="sb-slot"></div>
+  <div class="pad stack g20 center" style="padding-top:22px">
+    <img src="img/orb-big.jpg" style="width:64px;height:64px;border-radius:50%;mix-blend-mode:multiply" alt="">
+    <div class="stack g4 center"><h1 class="ttl" style="font-size:34px">All three visas are in.</h1><span class="ttl prism" style="font-size:26px">Vietnam, here you come.</span></div>
+    <div class="cm" style="width:100%"><div class="wp"><span class="brand">+ atlys worldpass</span><div class="g"></div><div class="nm">Sharma family</div><div class="no">3 TRAVELLERS</div><div class="stamp">APPROVED<br>VNM · 02 DEC</div></div></div>
+    <div class="stack g8" style="width:100%;text-align:left"><span class="w6 s15">Unlocked for this trip</span>
+      <div class="perks"><div class="perk" style="background:#EEF0FE"><span class="w6 s13">Unlimited eSIM</span><span class="s12 i2">Works when you land. No SIM swap.</span></div><div class="perk" style="padding:0"><img src="img/perk-pickup.jpg" style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0" alt="Airport pickup"></div><div class="perk" style="background:#E9F6F0"><span class="w6 s13">Travel insurance</span><span class="s12 i2">Up to ₹50 lakh medical cover.</span></div></div></div>
+    <div class="stack g12" style="width:100%"><div class="btn">Download all visas</div><span class="s13 u" style="text-decoration-color:currentColor;font-weight:500">Share with Arjun and Maya</span></div>
+  </div></div></div>
+  <div class="cap"><b>4 · Approved</b>The emotional peak: aurora, orb, prism line, stamped worldpass, then the perks it unlocks.</div></div>
+
+<!-- N5 READY TO FLY -->
+<div class="col"><div class="phone A"><div class="scroll">
+  <div class="sb-slot"></div>
+  <div class="pad stack g20" style="padding-top:6px">
+    <div class="stack g8"><span class="lbl">Tomorrow · 6:40 AM · DEL → HAN</span><h1 class="ttl t30">Ready to fly?</h1></div>
+    <div class="stack g8"><div class="hrow"><span class="s13 i2">3 of 5 done</span></div><div class="pbar"><i style="width:60%"></i></div></div>
+    <div class="pcard ftrack" style="padding:16px 18px"><div class="hd"><span class="ci" style="background:#22A06B;width:14px;height:14px"></span>FAST-TRACK IMMIGRATION<span class="elig">Booked</span></div><div class="stack g4"><span style="font-family:var(--serif);font-size:20px">Skip the queue at Noi Bai</span><span class="s12" style="color:#5FD49B">Show this card at gate C · 3 travellers</span></div></div>
+    <div class="wcard" style="padding:4px 16px;gap:0">
+      <div class="trow"><span class="ck d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="m5 12 5 5 9-10"/></svg></span><span class="w5" style="flex:1">Visas downloaded</span><span class="s12 mt">3 of 3</span></div>
+      <div class="trow"><span class="ck d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="m5 12 5 5 9-10"/></svg></span><span class="w5" style="flex:1">Insurance active</span><span class="s12 mt">8–15 Dec</span></div>
+      <div class="trow"><span class="ck d"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><path d="m5 12 5 5 9-10"/></svg></span><span class="w5" style="flex:1">Fast-track booked</span></div>
+      <div class="trow"><span class="ck o"></span><span class="w5" style="flex:1">Install eSIM</span><span class="btn sm">Install</span></div>
+      <div class="trow"><span class="ck o"></span><span class="w5" style="flex:1">Fill arrival card</span><span class="btn sm ghost">Auto-fill</span></div>
+    </div>
+  </div></div><div class="tabbar-slot"></div></div>
+  <div class="cap"><b>5 · Ready to fly</b>Day-before checklist. Done items go quiet; open ones get a button. Prism progress on top.</div></div>
+
+<!-- N6 VAULT -->
+<div class="col"><div class="phone A"><div class="scroll">
+  <div class="sb-slot"></div>
+  <div class="pad stack g16" style="padding-top:6px">
+    <div class="hrow"><span class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 6-6 6 6 6"/></svg></span><span class="sp"></span><span class="iconbtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span></div>
+    <div class="pcard vault" style="min-height:150px"><div class="dial" style="top:42px"></div><div class="dial2" style="top:68px"></div><div class="hd"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5z"/></svg>SHARMA FAMILY VAULT</div><div class="stack"><span style="font-size:30px;font-weight:500;line-height:1">11</span><span class="w6 s16">Documents</span><span class="s12">Reused on every visa</span></div></div>
+    <div class="hrow" style="gap:8px;overflow:hidden"><span class="chipf on">All</span><span class="chipf">Passports</span><span class="chipf">Photos</span><span class="chipf">Bank</span></div>
+    <div class="wcard" style="padding:4px 16px;gap:0">
+      <div class="trow"><span class="thumbs" style="background:linear-gradient(160deg,#2C3E66,#14213D)"></span><div class="stack" style="flex:1"><span class="w6">Riya · Passport</span><span class="s12 mt">Valid till Mar 2033</span></div><span class="st2 ok"><i></i>OK</span></div>
+      <div class="trow"><span class="thumbs" style="background:linear-gradient(160deg,#2C3E66,#14213D)"></span><div class="stack" style="flex:1"><span class="w6">Arjun · Passport</span><span class="s12" style="color:#B4531A">Expires in 5 months. Renew before the trip?</span></div><span class="st2 wa"><i></i>Soon</span></div>
+      <div class="trow"><span class="thumbs"></span><div class="stack" style="flex:1"><span class="w6">Arjun · Bank statement</span><span class="s12 mt">Aug – Oct 2026</span></div><span class="st2 ok"><i></i>New</span></div>
+      <div class="trow"><div class="skel" style="width:40px;height:50px;border-radius:8px"></div><div class="stack g8" style="flex:1"><div class="skel" style="height:12px;width:70%"></div><div class="skel" style="height:10px;width:40%"></div></div></div>
+    </div>
+  </div></div>
+  <div class="toast2" style="position:absolute;left:14px;right:14px;bottom:20px;z-index:6"><svg width="16" height="16" viewBox="0 0 24 24" fill="#C9A15A"><rect x="3" y="7" width="18" height="13" rx="2"/></svg>Statement saved to your vault<span class="u2">Undo</span></div>
+  </div><div class="cap"><b>6 · Family vault</b>Steel vault card, filter chips, expiry warnings before they become rejections, skeleton for loading, toast with undo.</div></div>
+
+    </div>
+  </div>
+</section>
+
+<div class="pick">
+  <span class="eyebrow" style="color:#8A8F9C">Your call</span>
+  <h2>Finalise this system?</h2>
+  <p>Say yes, or name what to change: colours, type, components, a screen. Once you approve, I'll write <code>design.md</code> from exactly these tokens and components.</p>
+</div>
+</div>
+
+<template id="sb"><div class="sb"><span>9:41</span><span class="ic"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4.5" y="5" width="3" height="6" rx="1"/><rect x="9" y="2.5" width="3" height="8.5" rx="1"/><rect x="13" y="0" width="3" height="11" rx="1"/></svg><span class="bat"></span></span></div></template>
+<template id="tabbar"><div class="tabbar"><i><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 3 3 10.5l7.5 2.5L13 21z"/></svg></i><i class="on"><svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg>Home</i><i><span class="av"></span></i></div></template>
+<script>
+const T=id=>document.getElementById(id).content;
+document.querySelectorAll('.sb-slot').forEach(s=>s.replaceWith(T('sb').cloneNode(true)));
+document.querySelectorAll('.tabbar-slot').forEach(s=>s.replaceWith(T('tabbar').cloneNode(true)));
+</script>
