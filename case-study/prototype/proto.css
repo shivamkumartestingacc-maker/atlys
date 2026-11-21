@@ -52,6 +52,11 @@ img{display:block}
 .pill.ghost{background:#fff;border:1px solid var(--line);width:52px;padding:0;justify-content:center}
 .pill.ghost svg{width:18px;height:18px}
 .note{font-size:12.5px;color:var(--muted)}
+.foot{grid-column:1/-1;grid-row:2;display:flex;justify-content:space-between;align-items:center;gap:12px 24px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(22,22,26,.08)}
+.foot address{font-style:normal;display:flex;gap:6px 18px;flex-wrap:wrap;font-size:13px;color:var(--ink2)}
+.foot address b{font-weight:600;color:var(--ink)}
+.foot a{color:inherit;text-decoration:underline;text-decoration-color:rgba(22,22,26,.25);text-underline-offset:3px}
+.foot a:hover{text-decoration-color:currentColor}
 
 .phwrap{position:relative;flex:none}
 .scaler{position:absolute;top:0;left:0;transform-origin:top left}
@@ -493,6 +498,7 @@ svg.gi{stroke:url(#tgrad)}
 @media (max-width:860px){
   .stage{grid-template-columns:1fr;justify-items:center;gap:28px;padding:28px 16px 40px;text-align:left}
   .copy{max-width:520px;width:100%;gap:18px}
+  .foot{grid-row:auto;order:3;width:100%;max-width:520px}
   .stage::before{background:radial-gradient(420px 420px at 50% 60%,rgba(186,170,255,.35),transparent 70%)}
   .ov .oc{top:12px;right:12px}
   .ov .oc .lbl{display:none}
