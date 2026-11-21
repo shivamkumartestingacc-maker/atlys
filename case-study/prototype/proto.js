@@ -4,7 +4,7 @@
    pointer events a person would, so video and interactive mode share one implementation. */
 (function () {
   const STOP = Symbol('stop');
-  const SPEED = 1.35; // >1 slows every scripted wait and pointer move
+  const SPEED = 1.12; // >1 slows every scripted wait; reading holds live in SCRIPT
   const $ = (r, s) => r.querySelector(s);
   const $$ = (r, s) => [...r.querySelectorAll(s)];
   const IMG = 'img/';
@@ -57,6 +57,7 @@
   const ASK = 'Should we vote? I’m asking AI...';
   const DEST = {
     gok: { name: 'Gokarna Beach', short: 'Gokarna Beach, Goa', img: 'b-gokarna.jpg', desc: 'Om beach near Mallikarjuna temple. Historic Shiva temple surrounded by greenery.' },
+    agd: { name: 'Agonda Beach', short: 'Agonda Beach, Goa', img: 'b-third.jpg', desc: 'Quiet Canacona beach, a short ride to Shri Mallikarjun temple. Calm water and beach huts.' },
     aar: { name: 'Aarambol Beach', short: 'Aarambol Beach, Goa', img: 'b-aarambol.jpg', desc: 'Shri Ajoba Temple, Ashwem is near to Aarambol beach. Enjoy waters, sea food and games in beach.' }
   };
   const VOTES = [['15 Apr - 25 Apr', 5], ['15 Apr - 27 Apr', 0], ['15 Apr - 24 Apr', 0]];
@@ -164,7 +165,7 @@
       <div class="skel">${'<div class="sk"><div class="p"></div><div class="l" style="width:46%"></div><div class="l" style="width:82%"></div></div>'.repeat(2)}</div>
       <div class="res"><div class="dst">${I.pin}<div><b>Destination</b><span>As you all asked for Beach + Temple + Goa</span></div></div>
       ${Object.entries(DEST).map(([k, d]) => `<div class="dc"><div class="ph"><img src="${IMG}${d.img}" alt=""></div><div class="mt2"><div class="k"><b>${d.name}</b><span>${d.desc}</span></div><button class="add tap" data-dest="${k}">${I.check}<span>Add</span></button></div></div>`).join('')}
-      <div class="dc third"><div class="ph"><img src="${IMG}b-third.jpg" alt=""></div></div></div>
+      </div>
     </div></div>
 
     <div class="pg scroll nx gone" data-p="rk"><div class="rk st">
@@ -274,7 +275,7 @@
         for (let b = 0; b < bubbles.length; b++) {
           m.insertAdjacentHTML('beforeend', `<div class="msg in tmp"><img class="av" src="${IMG}a-${who}.png" alt=""><div class="bs"><div class="bb typing"><i></i><i></i><i></i></div></div></div>`);
           scrollMsgs();
-          await wait(700 + bubbles[b].length * 9);
+          await wait(420 + bubbles[b].length * 6);
           q('.tmp').remove();
           if (!msg) {
             m.insertAdjacentHTML('beforeend', msgHTML(who, [bubbles[b]], meta, 'in'));
@@ -285,7 +286,7 @@
             $(msg, '.mt').before(bb);
           }
           scrollMsgs();
-          await wait(450);
+          await wait(300);
         }
       }
       S.loaded = true;
@@ -308,7 +309,7 @@
       box.classList.add('t');
       box.innerHTML = '<span class="tt"></span><span class="car"></span>';
       const tt = $(box, '.tt');
-      for (let i = 1; i <= ASK.length; i++) { tt.textContent = ASK.slice(0, i); if (!ctx.instant) await wait(i < 4 ? 90 : 38 + Math.random() * 40); }
+      for (let i = 1; i <= ASK.length; i++) { tt.textContent = ASK.slice(0, i); if (!ctx.instant) await wait(i < 4 ? 80 : 28 + Math.random() * 30); }
       q('.comp').classList.add('ty');
     });
     const send = () => run(async () => {
@@ -541,9 +542,10 @@
       q('.fab').classList.remove('hide');
       await wait(650);
       const m = q('.msgs');
-      m.insertAdjacentHTML('beforeend', '<div class="msg ai in tmp"><span class="orb av"></span><div class="bs"><div class="bb typing"><i></i><i></i><i></i></div></div></div>');
+      m.insertAdjacentHTML('beforeend', '<div class="msg ai in tmp"><span class="orb av spin"></span><div class="bs"><div class="bb aw"><b>Trip AI is working</b><span class="ts"><span>Collecting 6 rankings</span></span><i class="bar"></i></div></div></div>');
       scrollMsgs();
-      await wait(1300);
+      const ts = q('.tmp .ts');
+      for (const l of ['Collecting 6 rankings', 'Comparing date ranges', 'Matching budgets', 'Scoring group alignment']) { ts.innerHTML = `<span>${l}</span>`; await wait(620); }
       q('.tmp').remove();
       const d = S.plan.dest;
       m.insertAdjacentHTML('beforeend', `<div class="rep in"><div class="rh"><span class="orb"></span>Trip AI report...</div><div class="rb">
@@ -758,33 +760,33 @@
     'We’re going.'
   ];
   const SCRIPT = [
-    { ch: 0, pause: 2200 },
-    { ch: 0, drag: '.hsheet .list', by: [0, -230], after: 1000 },
-    { ch: 1, tap: '.row[data-g="goa"]', after: 1900 },
-    { ch: 1, tap: '.comp .in', after: 350 },
-    { ch: 1, tap: '.comp .send', after: 1100 },
+    { ch: 0, pause: 2400 },
+    { ch: 0, drag: '.hsheet .list', by: [0, -230], after: 1100 },
+    { ch: 1, tap: '.row[data-g="goa"]', after: 700 },
+    { ch: 1, tap: '.comp .in', after: 300 },
+    { ch: 1, tap: '.comp .send', after: 800 },
     { ch: 2, tap: '.fab', after: 900 },
-    { ch: 3, tap: '.sheet .start', after: 2600 },
-    { ch: 4, tap: '.pfoot .nx', after: 900 },
-    { ch: 4, tap: '.cal .d[data-d="15"]', after: 350 },
-    { ch: 4, tap: '.cal .d[data-d="20"]', after: 450 },
-    { ch: 4, tap: '.tgl', after: 450 },
-    { ch: 4, tap: '[data-c="dest"]:nth-child(2)', after: 450 },
-    { ch: 4, drag: '.th[data-t="0"]', to: (app) => app.sliderX(25), after: 250 },
-    { ch: 4, drag: '.th[data-t="1"]', to: (app) => app.sliderX(35), after: 350 },
-    { ch: 4, tap: '[data-c="bud"]:nth-child(2)', after: 700 },
-    { ch: 5, tap: '.pfoot .nx', after: 1300 },
-    { ch: 5, tap: '.add[data-dest="gok"]', after: 800 },
-    { ch: 5, tap: '.add[data-dest="aar"]', after: 1000 },
+    { ch: 3, tap: '.sheet .start', after: 3000 },
+    { ch: 4, tap: '.pfoot .nx', after: 1000 },
+    { ch: 4, tap: '.cal .d[data-d="15"]', after: 300 },
+    { ch: 4, tap: '.cal .d[data-d="20"]', after: 500 },
+    { ch: 4, tap: '.tgl', after: 400 },
+    { ch: 4, tap: '[data-c="dest"]:nth-child(2)', after: 400 },
+    { ch: 4, drag: '.th[data-t="0"]', to: (app) => app.sliderX(25), after: 200 },
+    { ch: 4, drag: '.th[data-t="1"]', to: (app) => app.sliderX(35), after: 300 },
+    { ch: 4, tap: '[data-c="bud"]:nth-child(2)', after: 800 },
+    { ch: 5, tap: '.pfoot .nx', after: 1000 },
+    { ch: 5, tap: '.add[data-dest="gok"]', after: 600 },
+    { ch: 5, tap: '.add[data-dest="aar"]', after: 900 },
     { ch: 6, tap: '.pfoot .nx', after: 1300 },
-    { ch: 6, drag: '[data-l="date"] .ri:nth-child(2) .gp', by: [0, -45], after: 900 },
-    { ch: 7, tap: '.pfoot .nx', after: 1900 },
+    { ch: 6, drag: '[data-l="date"] .ri:nth-child(2) .gp', by: [0, -45], after: 800 },
+    { ch: 7, tap: '.pfoot .nx', after: 2800 },
     { ch: 8, tap: '.vr[data-i="0"]', after: 0 },
-    { ch: 9, pause: 5600 }
+    { ch: 9, pause: 5000 }
   ];
 
   // rough chapter lengths for the progress bar: waits + pointer travel + built-in animation time
-  const EXTRA = [0, 9500, 4300, 700, 0, 4300, 300, 4500, 3600, 0];
+  const EXTRA = [0, 7500, 3900, 700, 0, 4300, 300, 5500, 3200, 0];
   const SCRIPT_MS = CHAPTERS.map((_, c) => (SCRIPT.filter((s) => s.ch === c).reduce((a, s) => a + (s.pause || s.after || 0) + (s.tap || s.drag ? 800 : 0), 0) + EXTRA[c]) * SPEED);
 
   function createVideo(app, { onChapter } = {}) {
@@ -796,7 +798,6 @@
       const g = ctx.gen;
       if (ctx.instant) { fn(1); return res(); }
       let el = 0, last = performance.now();
-      ms *= SPEED;
       (function f(now) {
         if (g !== ctx.gen) return rej(STOP);
         if (!ctx.paused) el += now - last;
@@ -806,7 +807,10 @@
       })(last);
     });
     const place = () => { ptr.style.left = P.x + 'px'; ptr.style.top = P.y + 'px'; };
+    let hideT = 0;
+    const idle = () => { clearTimeout(hideT); hideT = setTimeout(() => ptr && ptr.classList.remove('on'), 650); };
     async function moveTo(x, y) {
+      clearTimeout(hideT);
       ptr = scr.querySelector('.ptr');
       ptr.classList.add('on');
       const x0 = P.x, y0 = P.y, d = Math.hypot(x - x0, y - y0);
@@ -845,6 +849,7 @@
         ptr.classList.remove('down'); el.classList.remove('pressed'); ripple();
       }
       el.click();
+      idle();
       await app.busy;
     }
     async function drag(step) {
@@ -859,6 +864,7 @@
       await anim(step.drag.includes('list') ? 520 : 700, (p) => { P.x = c.x + (to.x - c.x) * p; P.y = c.y + (to.y - c.y) * p; if (ptr) place(); ev('pointermove', P.x, P.y); });
       ev('pointerup', P.x, P.y);
       if (ptr) ptr.classList.remove('down');
+      idle();
       await app.wait(320);
     }
 
