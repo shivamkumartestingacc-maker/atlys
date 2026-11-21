@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trip AI Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,700;1,6..72,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="proto.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="tgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5a3fd0"/><stop offset=".5" stop-color="#e0457b"/><stop offset="1" stop-color="#f7a531"/></linearGradient>
+  <linearGradient id="sgrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2c2a8c"/><stop offset="1" stop-color="#8a63f0"/></linearGradient>
+</defs></svg>
+
+<main class="stage">
+  <div class="copy">
+    <span class="ey">Atlys Design Assignment · Trip AI · Prototype</span>
+    <h1>From group chat<br>to <span class="g">we’re going.</span></h1>
+    <div class="cap" id="cap"><i>01</i><b>Every plan starts in a group chat</b></div>
+    <div class="chap" id="chap" aria-label="Chapters"></div>
+    <div class="ctl">
+      <button class="pill dark" id="try"><span class="sp"></span>Try prototype</button>
+      <button class="pill ghost" id="pp" aria-label="Pause"></button>
+    </div>
+  </div>
+  <footer class="foot">
+    <span class="note">Mock data · simulated AI</span>
+    <address><b>Shivam Kumar</b><span>Email: <a href="mailto:shivamatdesign@gmail.com">shivamatdesign@gmail.com</a></span><span>Ph no. <a href="https://wa.me/919523425411" target="_blank" rel="noopener">9523425411</a></span></address>
+  </footer>
+  <div class="phwrap" id="vid" title="Click to try it yourself" style="cursor:pointer">
+    <div class="scaler"><div class="device"><div class="screen" style="pointer-events:none"></div></div></div>
+  </div>
+</main>
+
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="Interactive prototype">
+  <div class="bg" data-close></div>
+  <div class="oc">
+    <button id="rs" aria-label="Restart"></button>
+    <button data-close aria-label="Close"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg><span class="lbl">Close</span></button>
+  </div>
+  <div class="phwrap" id="ia"><div class="scaler"><div class="device"><div class="screen"></div></div></div></div>
+  <div class="tip"><i></i>Tap around. The ring shows what's next.</div>
+</div>
+
+<script src="proto.js"></script>
+<script>
+(function () {
+  const { createApp, createVideo, CHAPTERS, I } = TripProto;
+  const $ = (s) => document.querySelector(s);
+  const DEV = [415, 874];
+
+  function fit(wrap, s) {
+    wrap.style.width = DEV[0] * s + 'px';
+    wrap.style.height = DEV[1] * s + 'px';
+    wrap.querySelector('.scaler').style.transform = `scale(${s})`;
+  }
+  function layout() {
+    const mob = innerWidth <= 860;
+    fit($('#vid'), Math.min(1, (innerHeight - (mob ? 40 : 64)) / DEV[1], (innerWidth - 32) / DEV[0]));
+    fit($('#ia'), Math.min(1, (innerHeight - 110) / DEV[1], (innerWidth - 24) / DEV[0]));
+  }
+  layout();
+  addEventListener('resize', layout);
+
+  /* video */
+  const vapp = createApp($('#vid .screen'), { mode: 'video' });
+  const chap = $('#chap'), cap = $('#cap');
+  chap.innerHTML = CHAPTERS.map((c, i) => `<button aria-label="${i + 1}. ${c}" title="${c}"><span></span></button>`).join('');
+  const bars = [...chap.children];
+  const video = createVideo(vapp, {
+    onChapter(c) {
+      cap.classList.remove('sw'); void cap.offsetWidth; cap.classList.add('sw');
+      cap.innerHTML = `<i>${String(c + 1).padStart(2, '0')}</i><b>${CHAPTERS[c]}</b>`;
+      bars.forEach((b, i) => {
+        const sp = b.firstChild;
+        sp.style.transition = 'none';
+        sp.style.width = i < c ? '100%' : '0';
+        b.classList.toggle('done', i < c);
+      });
+      const sp = bars[c].firstChild; void sp.offsetWidth;
+      sp.style.transition = `width ${chapterMs(c)}ms linear`;
+      sp.style.width = paused ? '0' : '100%';
+    }
+  });
+  function chapterMs(c) {
+    return TripProto.SCRIPT_MS ? TripProto.SCRIPT_MS[c] : 6000;
+  }
+  bars.forEach((b, i) => b.addEventListener('click', () => { setPaused(false); video.seek(i); }));
+
+  let paused = false;
+  const pp = $('#pp');
+  const ICON_P = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>';
+  const ICON_PLAY = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l12-7z"/></svg>';
+  function setPaused(v) {
+    paused = v;
+    video.pause(v);
+    pp.innerHTML = v ? ICON_PLAY : ICON_P;
+    pp.setAttribute('aria-label', v ? 'Play' : 'Pause');
+    const cur = bars[video.chapter];
+    if (cur) {
+      const sp = cur.firstChild;
+      if (v) { const w = getComputedStyle(sp).width; sp.style.transition = 'none'; sp.style.width = w; }
+      else { sp.style.transition = `width ${chapterMs(video.chapter) / 2}ms linear`; sp.style.width = '100%'; }
+    }
+  }
+  pp.addEventListener('click', () => setPaused(!paused));
+  setPaused(false);
+  video.start();
+  document.addEventListener('visibilitychange', () => { if (!ov.classList.contains('on')) video.pause(document.hidden || paused); });
+
+  /* interactive modal */
+  const ov = $('#ov');
+  let iapp = null, wasPaused = false;
+  $('#rs').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v4.5h4.5"/></svg><span class="lbl">Restart</span>';
+  function open() {
+    if (!iapp) iapp = createApp($('#ia .screen'), { mode: 'interactive' }); else iapp.reset();
+    wasPaused = paused;
+    video.pause(true);
+    ov.classList.add('on');
+    document.body.style.overflow = 'hidden';
+  }
+  function close() {
+    ov.classList.remove('on');
+    document.body.style.overflow = '';
+    video.pause(wasPaused);
+  }
+  $('#try').addEventListener('click', open);
+  $('#vid').addEventListener('click', (e) => { if (e.isTrusted) open(); });
+  $('#rs').addEventListener('click', () => iapp && iapp.reset());
+  ov.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && ov.classList.contains('on')) close(); });
+})();
+</script>
+</body>
+</html>
