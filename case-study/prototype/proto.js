@@ -91,7 +91,7 @@
     </div>
     <div class="fadeb"></div>
     <button class="newg tap">${I.plus0}New Group</button>
-    <nav class="tabbar">${I.plane}<span class="hm">${I.home}Home</span><img src="${IMG}a-profile.png" alt=""></nav>
+    <nav class="tabbar">${I.plane}<span class="hm">${I.home}Home</span><img src="${IMG}a-me.png" alt=""></nav>
   </section>
 
   <section class="view chat off-r gone" data-v="chat">
