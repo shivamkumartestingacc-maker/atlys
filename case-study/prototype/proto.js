@@ -4,6 +4,7 @@
    pointer events a person would, so video and interactive mode share one implementation. */
 (function () {
   const STOP = Symbol('stop');
+  const SPEED = 1.35; // >1 slows every scripted wait and pointer move
   const $ = (r, s) => r.querySelector(s);
   const $$ = (r, s) => [...r.querySelectorAll(s)];
   const IMG = 'img/';
@@ -94,7 +95,7 @@
 
   <section class="view chat off-r gone" data-v="chat">
     <header class="hdr"><button class="bk tap" data-a="home">${I.back}</button><span class="ga"><img src="${IMG}g-goa.png" alt=""></span><div class="nm"><b>Goa Trip</b><span>You, Akshay, Aman, Sneha, Sakshi, Priya</span></div><span class="kb">${I.kebab}</span></header>
-    <div class="msgs scroll"><span class="dpill">Today · 21/11/2026</span>${MSGS.map((m) => msgHTML(...m)).join('')}</div>
+    <div class="msgs scroll"><span class="dpill">Today · 21/11/2026</span>${msgHTML(...MSGS[0])}</div>
     <button class="fab tap">${I.spark}Ask Trip AI</button>
     <div class="comp"><span class="cam">${I.cam}</span><div class="in tap">Message....</div><span class="ic">${I.mic}${I.smile}${I.plus}</span><button class="send tap" aria-label="Send">${I.up}</button></div>
     <div class="veil"></div>
@@ -190,7 +191,7 @@
       const g = ctx.gen;
       if (ctx.instant) return g === ctx.gen ? Promise.resolve() : Promise.reject(STOP);
       return new Promise((res, rej) => {
-        let left = ms, last = performance.now();
+        let left = ms * SPEED, last = performance.now();
         (function tick() {
           if (g !== ctx.gen) return rej(STOP);
           const now = performance.now();
@@ -261,9 +262,31 @@
       const home = q('.home'), chat = q('.chat');
       show(chat);
       home.classList.add('off-l');
-      qa('.chat .msg').forEach((m, i) => { m.classList.remove('in'); reflow(m); m.style.animationDelay = `${0.25 + i * 0.09}s`; m.classList.add('in'); });
       await wait(700);
       home.classList.add('gone');
+      if (S.loaded) return;
+      // the group talks: each friend types, then their message lands
+      const m = q('.msgs');
+      for (const [who, bubbles, meta] of MSGS.slice(1)) {
+        let msg = null;
+        for (let b = 0; b < bubbles.length; b++) {
+          m.insertAdjacentHTML('beforeend', `<div class="msg in tmp"><img class="av" src="${IMG}a-${who}.png" alt=""><div class="bs"><div class="bb typing"><i></i><i></i><i></i></div></div></div>`);
+          scrollMsgs();
+          await wait(700 + bubbles[b].length * 9);
+          q('.tmp').remove();
+          if (!msg) {
+            m.insertAdjacentHTML('beforeend', msgHTML(who, [bubbles[b]], meta, 'in'));
+            msg = m.lastElementChild;
+          } else {
+            const bb = document.createElement('div');
+            bb.className = 'bb'; bb.style.animation = 'msgin .55s var(--spring-soft) both'; bb.textContent = bubbles[b];
+            $(msg, '.mt').before(bb);
+          }
+          scrollMsgs();
+          await wait(450);
+        }
+      }
+      S.loaded = true;
     });
     const goHome = () => run(async () => {
       const home = q('.home');
@@ -277,13 +300,13 @@
     /* ---------- chat ---------- */
     const scrollMsgs = () => { const m = q('.msgs'); m.scrollTo({ top: m.scrollHeight, behavior: ctx.instant ? 'auto' : 'smooth' }); };
     const typeAsk = () => run(async () => {
-      if (S.typed || S.sent) return;
+      if (S.typed || S.sent || !S.loaded) return;
       S.typed = true;
       const box = q('.comp .in');
       box.classList.add('t');
       box.innerHTML = '<span class="tt"></span><span class="car"></span>';
       const tt = $(box, '.tt');
-      for (let i = 1; i <= ASK.length; i++) { tt.textContent = ASK.slice(0, i); if (!ctx.instant) await wait(i < 4 ? 70 : 26 + Math.random() * 30); }
+      for (let i = 1; i <= ASK.length; i++) { tt.textContent = ASK.slice(0, i); if (!ctx.instant) await wait(i < 4 ? 90 : 38 + Math.random() * 40); }
       q('.comp').classList.add('ty');
     });
     const send = () => run(async () => {
@@ -632,7 +655,7 @@
     app.hintTarget = () => {
       switch (S.stage) {
         case 'home': return '.row[data-g="goa"]';
-        case 'chat': return S.typed ? '.comp .send' : '.comp .in';
+        case 'chat': return !S.loaded ? null : S.typed ? '.comp .send' : '.comp .in';
         case 'sent': return '.fab';
         case 'sheet': return S.sheetReady ? '.sheet .start' : null;
         case 'gat': return '.pfoot .nx';
@@ -740,8 +763,8 @@
   ];
 
   // rough chapter lengths for the progress bar: waits + pointer travel + built-in animation time
-  const EXTRA = [0, 1800, 4300, 700, 0, 0, 300, 4500, 3600, 0];
-  const SCRIPT_MS = CHAPTERS.map((_, c) => SCRIPT.filter((s) => s.ch === c).reduce((a, s) => a + (s.pause || s.after || 0) + (s.tap || s.drag ? 800 : 0), 0) + EXTRA[c]);
+  const EXTRA = [0, 9500, 4300, 700, 0, 0, 300, 4500, 3600, 0];
+  const SCRIPT_MS = CHAPTERS.map((_, c) => (SCRIPT.filter((s) => s.ch === c).reduce((a, s) => a + (s.pause || s.after || 0) + (s.tap || s.drag ? 800 : 0), 0) + EXTRA[c]) * SPEED);
 
   function createVideo(app, { onChapter } = {}) {
     const ctx = app.ctx, scr = app.screen;
@@ -752,6 +775,7 @@
       const g = ctx.gen;
       if (ctx.instant) { fn(1); return res(); }
       let el = 0, last = performance.now();
+      ms *= SPEED;
       (function f(now) {
         if (g !== ctx.gen) return rej(STOP);
         if (!ctx.paused) el += now - last;
