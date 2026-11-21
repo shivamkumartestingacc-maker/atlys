@@ -158,11 +158,13 @@
     </div></div>
 
     <div class="pg scroll nx gone" data-p="rec"><div class="rec st">
-      <h2 class="ttl">AI is <span class="g">recommending...</span></h2>
+      <h2 class="ttl">AI is <span class="g">thinking<span class="dots"><i>.</i><i>.</i><i>.</i></span></span></h2>
       <p class="sub2">based on your and the group’s preferences, here are places recommended by AI</p>
-      <div class="dst">${I.pin}<div><b>Destination</b><span>As you all asked for Beach + Temple + Goa</span></div></div>
+      <div class="think"><span class="orb"></span><div class="tw"><b>Matching places for all 6</b><span class="ts"><span>Reading everyone’s preferences</span></span></div><span class="ct"><b>0</b><br>places</span><i class="bar"></i></div>
+      <div class="skel">${'<div class="sk"><div class="p"></div><div class="l" style="width:46%"></div><div class="l" style="width:82%"></div></div>'.repeat(2)}</div>
+      <div class="res"><div class="dst">${I.pin}<div><b>Destination</b><span>As you all asked for Beach + Temple + Goa</span></div></div>
       ${Object.entries(DEST).map(([k, d]) => `<div class="dc"><div class="ph"><img src="${IMG}${d.img}" alt=""></div><div class="mt2"><div class="k"><b>${d.name}</b><span>${d.desc}</span></div><button class="add tap" data-dest="${k}">${I.check}<span>Add</span></button></div></div>`).join('')}
-      <div class="dc third"><div class="ph"><img src="${IMG}b-third.jpg" alt=""></div></div>
+      <div class="dc third"><div class="ph"><img src="${IMG}b-third.jpg" alt=""></div></div></div>
     </div></div>
 
     <div class="pg scroll nx gone" data-p="rk"><div class="rk st">
@@ -378,7 +380,7 @@
     }
     function syncNext() {
       const b = q('.pfoot .nx');
-      b.disabled = S.page === 'rec' && S.added.size === 0;
+      b.disabled = S.page === 'rec' && (S.thinking || S.added.size === 0);
     }
     const openPlan = () => run(async () => {
       if (!S.sheetReady) return;
@@ -394,9 +396,28 @@
       q('.fab').classList.remove('hide');
       S.stage = S.reported ? 'report' : 'sent';
     });
+    async function think() { // anticipation: AI works through the group's inputs before answering
+      const r = q('.rec'), ts = q('.think .ts'), ct = q('.think .ct b');
+      syncNext();
+      countUp(ct, 24, 3400 * SPEED, (v) => v);
+      const lines = ['Reading everyone\u2019s preferences', 'Beach + Temples + Goa', `Budget ₹${S.b[0]}k – ₹${S.b[1]}k`, S.cal.s && S.cal.e ? `Free between ${S.cal.s}–${S.cal.e} Apr` : 'Checking free dates', 'Ranking the best matches'];
+      await wait(500);
+      for (const l of lines) { ts.innerHTML = `<span>${l}</span>`; await wait(720); }
+      r.classList.add('done');
+      q('.rec .ttl').innerHTML = 'AI is <span class="g">recommending...</span>';
+      S.thinking = false; S.recDone = true;
+      syncNext();
+      await wait(500);
+    }
     const next = () => run(async () => {
       const i = ORDER.indexOf(S.page);
-      if (i < ORDER.length - 1) { setPage(ORDER[i + 1], 1); await wait(650); return; }
+      if (i < ORDER.length - 1) {
+        const p = ORDER[i + 1];
+        if (p === 'rec' && !S.recDone) S.thinking = true;
+        setPage(p, 1);
+        if (S.thinking) await think(); else await wait(650);
+        return;
+      }
       await finishPlan();
     });
 
@@ -665,7 +686,7 @@
           if (!qa('[data-c="dest"].on').length) return '[data-c="dest"]:nth-child(2)';
           if (!S.bud) return '[data-c="bud"]:nth-child(2)';
           return '.pfoot .nx';
-        case 'rec': return S.added.size ? '.pfoot .nx' : '.add[data-dest="gok"]';
+        case 'rec': return S.thinking ? null : S.added.size ? '.pfoot .nx' : '.add[data-dest="gok"]';
         case 'rk': return '.pfoot .nx';
         case 'report': return S.reported ? '.vr[data-i="0"]' : null;
         case 'cele': return '.nx2';
@@ -763,7 +784,7 @@
   ];
 
   // rough chapter lengths for the progress bar: waits + pointer travel + built-in animation time
-  const EXTRA = [0, 9500, 4300, 700, 0, 0, 300, 4500, 3600, 0];
+  const EXTRA = [0, 9500, 4300, 700, 0, 4300, 300, 4500, 3600, 0];
   const SCRIPT_MS = CHAPTERS.map((_, c) => (SCRIPT.filter((s) => s.ch === c).reduce((a, s) => a + (s.pause || s.after || 0) + (s.tap || s.drag ? 800 : 0), 0) + EXTRA[c]) * SPEED);
 
   function createVideo(app, { onChapter } = {}) {
