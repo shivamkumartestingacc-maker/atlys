@@ -190,9 +190,9 @@
     if (document.getElementById('aiscan')) return;
     const d = document.createElement('div');
     d.innerHTML = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="aiscan" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.05" numOctaves="2" seed="4" result="n"><animate attributeName="baseFrequency" dur="1.6s" values="0.008 0.05;0.014 0.08;0.008 0.05" repeatCount="indefinite"/></feTurbulence>
-      <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G" result="d"/>
-      <feGaussianBlur in="d" stdDeviation="1.8" result="b"/>
+      <feTurbulence id="aiscanN" type="fractalNoise" baseFrequency="0.006 0.04" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap id="aiscanD" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur id="aiscanB" in="d" stdDeviation="1.6" result="b"/>
       <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-5" dy="-1" result="r2"/>
       <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>
       <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="5" dy="1" result="b2"/>
@@ -352,6 +352,17 @@
       [c, g].forEach((e) => e.style.setProperty('--d', ms * SPEED + 'ms'));
       q('.chat').append(c, g);
       c.scrollTop = m.scrollTop;
+      // the ripple swells in and settles out while the noise keeps drifting, so it reads as water
+      const N = document.getElementById('aiscanN'), D = document.getElementById('aiscanD'), B = document.getElementById('aiscanB');
+      const T = ms * SPEED, t0 = performance.now(), g0 = ctx.gen;
+      (function f(now) {
+        if (!c.isConnected || g0 !== ctx.gen) return;
+        const t = (now - t0) / 1000, p = Math.min(1, (now - t0) / T), env = Math.sin(Math.PI * p);
+        N.setAttribute('baseFrequency', `${(0.006 + 0.0025 * Math.sin(t * 2.1)).toFixed(4)} ${(0.04 + 0.014 * Math.sin(t * 1.4 + 1)).toFixed(4)}`);
+        D.setAttribute('scale', (6 + 18 * env).toFixed(1));
+        B.setAttribute('stdDeviation', (0.8 + 1.6 * env).toFixed(2));
+        requestAnimationFrame(f);
+      })(t0);
       try { await wait(ms); } finally { c.remove(); g.remove(); }
     }
 
@@ -366,7 +377,7 @@
       const fab = q('.fab');
       fab.classList.remove('glow'); fab.classList.add('hide');
       if (S.sheetReady) { q('.veil').classList.add('on'); q('.sheet').classList.add('on'); return; }
-      const sc = scan(2300); // AI reads the chat
+      const sc = scan(2500); // AI reads the chat
       await wait(650);
       q('.veil').classList.add('on');
       q('.sheet').classList.add('on');
@@ -579,7 +590,7 @@
       m.insertAdjacentHTML('beforeend', '<div class="msg ai in tmp"><span class="orb av spin"></span><div class="bs"><div class="bb aw"><b>Trip AI is working</b><span class="ts"><span>Collecting 6 rankings</span></span><i class="bar"></i></div></div></div>');
       scrollMsgs();
       const ts = q('.tmp .ts');
-      wait(450).then(() => scan(2000)).catch(() => {});
+      wait(450).then(() => scan(2300)).catch(() => {});
       for (const l of ['Collecting 6 rankings', 'Comparing date ranges', 'Matching budgets', 'Scoring group alignment']) { ts.innerHTML = `<span>${l}</span>`; await wait(620); }
       q('.tmp').remove();
       const d = S.plan.dest;
