@@ -185,7 +185,24 @@
   /* =====================================================================
      App
      ===================================================================== */
+  // AI scan filter: water ripple (turbulence displacement) + blur + RGB split (chromatic aberration)
+  function scanFilter() {
+    if (document.getElementById('aiscan')) return;
+    const d = document.createElement('div');
+    d.innerHTML = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="aiscan" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+      <feTurbulence id="aiscanN" type="fractalNoise" baseFrequency="0.006 0.04" numOctaves="2" seed="4" result="n"/>
+      <feDisplacementMap id="aiscanD" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur id="aiscanB" in="d" stdDeviation="1.6" result="b"/>
+      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-5" dy="-1" result="r2"/>
+      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>
+      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="5" dy="1" result="b2"/>
+      <feBlend in="r2" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b2" mode="screen"/>
+    </filter></svg>`;
+    document.body.appendChild(d.firstChild);
+  }
+
   function createApp(screen, opts = {}) {
+    scanFilter();
     const ctx = { gen: 0, instant: false, paused: false };
     let S, A;
     const app = { screen, ctx, busy: Promise.resolve(), onAct: null };
@@ -324,6 +341,31 @@
       q('.fab').classList.add('glow');
     });
 
+    /* AI scan: a band sweeps up the chat; inside it the messages ripple, blur and split into RGB */
+    async function scan(ms) {
+      if (ctx.instant) return;
+      const m = q('.msgs'), c = m.cloneNode(true), g = document.createElement('div');
+      c.classList.add('scanc');
+      c.querySelectorAll('.in').forEach((e) => e.classList.remove('in'));
+      c.querySelectorAll('[style]').forEach((e) => { e.style.animation = 'none'; });
+      g.className = 'scang';
+      [c, g].forEach((e) => e.style.setProperty('--d', ms * SPEED + 'ms'));
+      q('.chat').append(c, g);
+      c.scrollTop = m.scrollTop;
+      // the ripple swells in and settles out while the noise keeps drifting, so it reads as water
+      const N = document.getElementById('aiscanN'), D = document.getElementById('aiscanD'), B = document.getElementById('aiscanB');
+      const T = ms * SPEED, t0 = performance.now(), g0 = ctx.gen;
+      (function f(now) {
+        if (!c.isConnected || g0 !== ctx.gen) return;
+        const t = (now - t0) / 1000, p = Math.min(1, (now - t0) / T), env = Math.sin(Math.PI * p);
+        N.setAttribute('baseFrequency', `${(0.006 + 0.0025 * Math.sin(t * 2.1)).toFixed(4)} ${(0.04 + 0.014 * Math.sin(t * 1.4 + 1)).toFixed(4)}`);
+        D.setAttribute('scale', (6 + 18 * env).toFixed(1));
+        B.setAttribute('stdDeviation', (0.8 + 1.6 * env).toFixed(2));
+        requestAnimationFrame(f);
+      })(t0);
+      try { await wait(ms); } finally { c.remove(); g.remove(); }
+    }
+
     /* ---------- AI sheet ---------- */
     const openSheet = () => run(async () => {
       if (S.reported) { // after the report, Ask Trip AI just reopens the plan
@@ -334,14 +376,17 @@
       S.stage = 'sheet';
       const fab = q('.fab');
       fab.classList.remove('glow'); fab.classList.add('hide');
+      if (S.sheetReady) { q('.veil').classList.add('on'); q('.sheet').classList.add('on'); return; }
+      const sc = scan(2500); // AI reads the chat
+      await wait(650);
       q('.veil').classList.add('on');
       q('.sheet').classList.add('on');
-      if (S.sheetReady) return;
-      await wait(500);
+      await wait(350);
       const lis = qa('.sheet li');
       for (let i = 0; i < lis.length; i++) {
         lis[i].classList.add('run');
-        await wait([550, 750, 900, 900][i]);
+        if (i === 0) await sc.catch(() => {}); // stays on "Read the chat." until the scan finishes
+        await wait([250, 750, 900, 900][i]);
         lis[i].classList.remove('run'); lis[i].classList.add('ok');
         await wait(160);
       }
@@ -545,6 +590,7 @@
       m.insertAdjacentHTML('beforeend', '<div class="msg ai in tmp"><span class="orb av spin"></span><div class="bs"><div class="bb aw"><b>Trip AI is working</b><span class="ts"><span>Collecting 6 rankings</span></span><i class="bar"></i></div></div></div>');
       scrollMsgs();
       const ts = q('.tmp .ts');
+      wait(450).then(() => scan(2300)).catch(() => {});
       for (const l of ['Collecting 6 rankings', 'Comparing date ranges', 'Matching budgets', 'Scoring group alignment']) { ts.innerHTML = `<span>${l}</span>`; await wait(620); }
       q('.tmp').remove();
       const d = S.plan.dest;
