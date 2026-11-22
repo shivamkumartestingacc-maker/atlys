@@ -691,6 +691,10 @@
         if (t.closest('.sheet .start')) return openPlan();
         if (t.closest('.pfoot .nx')) return next();
         if (t.closest('.nx2')) return toast('Itinerary planning comes next');
+        if (t.closest('.cele.on .tk')) { // tap the ticket: another burst
+          const cd = q('.tk .cd'); cd.classList.remove('tap'); reflow(cd); cd.classList.add('tap');
+          return confetti(q('.cele canvas'), ctx);
+        }
         const tg = t.closest('.tgl');
         if (tg) { S.flex = !S.flex; tg.classList.toggle('on', S.flex); return; }
         const d = t.closest('.cal .d');
@@ -775,36 +779,37 @@
   /* =====================================================================
      Confetti
      ===================================================================== */
-  function confetti(cv, ctx) {
+  function confetti(cv, ctx) { // one loop per canvas; another call adds a burst to it
     const dpr = Math.min(2, window.devicePixelRatio || 1), W = 393, H = 852;
-    cv.width = W * dpr; cv.height = H * dpr;
-    const c = cv.getContext('2d'); c.scale(dpr, dpr);
     const COL = ['#5a52e0', '#8a3fd0', '#e0457b', '#f58a3a', '#f7b23b', '#7fe0d0', '#ffffff'];
-    const P = [];
     const burst = (x, y, ang, spread, n, sp) => {
       for (let i = 0; i < n; i++) {
         const a = ang + (Math.random() - 0.5) * spread, v = sp * (0.55 + Math.random() * 0.6);
-        P.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.35, w: 5 + Math.random() * 6, h: 3 + Math.random() * 5, col: COL[(Math.random() * COL.length) | 0], sh: Math.random() < 0.25 ? 1 : 0, wob: Math.random() * 6 });
+        cv._P.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.35, w: 5 + Math.random() * 6, h: 3 + Math.random() * 5, col: COL[(Math.random() * COL.length) | 0], sh: Math.random() < 0.25 ? 1 : 0, wob: Math.random() * 6, t: performance.now() });
       }
     };
+    const fresh = !cv._P;
+    if (fresh) { cv.width = W * dpr; cv.height = H * dpr; cv.getContext('2d').scale(dpr, dpr); cv._P = []; }
     burst(30, 640, -Math.PI / 2 + 0.55, 0.9, 70, 17);
     burst(363, 640, -Math.PI / 2 - 0.55, 0.9, 70, 17);
-    setTimeout(() => burst(196, 380, -Math.PI / 2, 2.6, 60, 11), 250);
-    const g = ctx.gen, t0 = performance.now();
+    setTimeout(() => cv._P && burst(196, 380, -Math.PI / 2, 2.6, 60, 11), 250);
+    if (cv._run) return;
+    cv._run = true;
+    const c = cv.getContext('2d'), g = ctx.gen;
     (function f(now) {
-      if (g !== ctx.gen) return c.clearRect(0, 0, W, H);
-      const t = now - t0;
       c.clearRect(0, 0, W, H);
-      const fade = t > 2600 ? Math.max(0, 1 - (t - 2600) / 900) : 1;
-      for (const p of P) {
-        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.38; p.x += p.vx + Math.sin((t / 160) + p.wob) * 0.6; p.y += p.vy; p.r += p.vr;
+      if (g !== ctx.gen) { cv._run = false; cv._P = []; return; }
+      cv._P = cv._P.filter((p) => now - p.t < 3500 && p.y < H + 40);
+      for (const p of cv._P) {
+        const age = now - p.t, fade = age > 2600 ? Math.max(0, 1 - (age - 2600) / 900) : 1;
+        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.38; p.x += p.vx + Math.sin((age / 160) + p.wob) * 0.6; p.y += p.vy; p.r += p.vr;
         c.save(); c.globalAlpha = fade; c.translate(p.x, p.y); c.rotate(p.r); c.fillStyle = p.col;
         if (p.sh) { c.beginPath(); c.arc(0, 0, p.h / 1.6, 0, 7); c.fill(); }
-        else c.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(t / 120 + p.wob)) + 1);
+        else c.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(age / 120 + p.wob)) + 1);
         c.restore();
       }
-      if (fade > 0) requestAnimationFrame(f); else c.clearRect(0, 0, W, H);
-    })(t0);
+      if (cv._P.length) requestAnimationFrame(f); else cv._run = false;
+    })(performance.now());
   }
 
   /* =====================================================================
