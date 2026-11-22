@@ -178,7 +178,7 @@
       </div>
     </div></div>
 
-    <div class="pfoot"><button class="btn gr tap" data-a="backchat">back to chat</button><button class="btn pa tap nx"><span>All good let’s plan</span>${I.arrow}</button></div>
+    <div class="pfoot"><button class="btn gr tap" data-a="backchat">back to chat</button><button class="btn pa tap nx"><span>All good let’s plan</span><b class="bdg"></b>${I.arrow}</button></div>
   </section>
   <div class="ptr"></div>`;
 
@@ -424,9 +424,42 @@
       if (p === 'rk') buildRank();
       syncNext();
     }
+    // snappy "added" flight: photo lifts, shrinks to a thumb and arcs into the Continue button
+    function flyIn(ph) {
+      const btn = q('.pfoot .nx'), from = local(ph), to = local(btn);
+      const W = 64, H = Math.round(64 * from.h / from.w), ex = to.x + to.w - 46, ey = to.y + to.h / 2;
+      const ox = document.createElement('div'), oy = document.createElement('div'), sc = document.createElement('div');
+      ox.className = 'fly'; oy.className = 'fly-y'; sc.className = 'fly-s';
+      sc.innerHTML = `<img src="${ph.querySelector('img').src}" alt="">`;
+      Object.assign(ox.style, { left: ex - W / 2 + 'px', top: ey - H / 2 + 'px', width: W + 'px', height: H + 'px' });
+      oy.appendChild(sc); ox.appendChild(oy); A.appendChild(ox);
+      const dx = from.x + from.w / 2 - ex, dy = from.y + from.h / 2 - ey, s0 = from.w / W, T = 560;
+      ph.animate([{ transform: 'scale(1)' }, { transform: 'scale(.97)', offset: .25 }, { transform: 'scale(1)' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      ox.animate([{ transform: `translateX(${dx}px)` }, { transform: 'translateX(0)' }], { duration: T, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'both' });
+      oy.animate([{ transform: `translateY(${dy}px)` }, { transform: `translateY(${dy - 36}px)`, offset: .22 }, { transform: 'translateY(0)' }], { duration: T, easing: 'cubic-bezier(.5,0,.75,.4)', fill: 'both' });
+      const a = sc.animate([
+        { transform: `scale(${s0})`, borderRadius: `${14 / s0}px`, boxShadow: '0 0 0 rgba(0,0,0,0)', opacity: 1 },
+        { transform: `scale(${s0 * 0.62})`, borderRadius: '10px', boxShadow: '0 14px 30px rgba(40,30,120,.35)', opacity: 1, offset: .2 },
+        { transform: 'scale(.9)', borderRadius: '10px', opacity: 1, offset: .82 },
+        { transform: 'scale(.3)', borderRadius: '50%', opacity: 0 }
+      ], { duration: T, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both' });
+      a.onfinish = () => {
+        ox.remove();
+        btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.05)', offset: .35 }, { transform: 'scale(1)' }], { duration: 380, easing: 'cubic-bezier(.3,1.6,.6,1)' });
+        btn.classList.remove('shine'); reflow(btn); btn.classList.add('shine');
+        updateBadge(true);
+      };
+    }
+    function updateBadge(bump) {
+      const b = q('.pfoot .bdg'), n = S.page === 'rec' ? S.added.size : 0;
+      b.classList.toggle('on', n > 0);
+      if (n) b.textContent = n;
+      if (bump && n) { b.classList.remove('bump'); reflow(b); b.classList.add('bump'); }
+    }
     function syncNext() {
       const b = q('.pfoot .nx');
       b.disabled = S.page === 'rec' && (S.thinking || S.added.size === 0);
+      if (S.page !== 'rec') updateBadge(false);
     }
     const openPlan = () => run(async () => {
       if (!S.sheetReady) return;
@@ -538,16 +571,8 @@
       $(btn, 'span').textContent = on ? 'Added' : 'Add';
       btn.classList.remove('pop'); reflow(btn); btn.classList.add('pop');
       syncNext();
-      if (on && !ctx.instant) { // thumbnail flies into the continue button
-        const ph = btn.closest('.dc').querySelector('.ph'), to = local(q('.pfoot .nx')), from = local(ph);
-        const f = document.createElement('div');
-        f.className = 'fly';
-        f.innerHTML = `<img src="${ph.querySelector('img').src}" alt="">`;
-        Object.assign(f.style, { left: from.x + 'px', top: from.y + 'px', width: from.w + 'px', height: from.h + 'px' });
-        A.appendChild(f); reflow(f);
-        Object.assign(f.style, { left: to.x + to.w / 2 - 20 + 'px', top: to.y + 6 + 'px', width: '40px', height: '40px', borderRadius: '50%', opacity: '.3' });
-        setTimeout(() => { f.remove(); const b = q('.pfoot .nx'); b.classList.remove('shine'); reflow(b); b.classList.add('shine'); }, 760);
-      }
+      if (on && !ctx.instant) flyIn(btn.closest('.dc').querySelector('.ph'));
+      else updateBadge(false);
     }
 
     /* rank */
