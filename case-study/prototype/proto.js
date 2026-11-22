@@ -453,6 +453,7 @@
     function updateBadge(bump) {
       const b = q('.pfoot .bdg'), n = S.page === 'rec' ? S.added.size : 0;
       b.classList.toggle('on', n > 0);
+      b.parentElement.classList.toggle('hasb', n > 0); // badge stands in for the arrow so the label fits
       if (n) b.textContent = n;
       if (bump && n) { b.classList.remove('bump'); reflow(b); b.classList.add('bump'); }
     }
