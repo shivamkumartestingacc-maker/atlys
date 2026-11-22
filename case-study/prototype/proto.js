@@ -376,7 +376,8 @@
       const fab = q('.fab');
       fab.classList.remove('glow'); fab.classList.add('hide');
       if (S.sheetReady) { q('.veil').classList.add('on'); q('.sheet').classList.add('on'); return; }
-      const sc = scan(2500); // AI reads the chat
+      let reading = true; // AI keeps sweeping the chat until all 4 checks are done
+      (async () => { while (reading) await scan(2300); })().catch(() => {});
       await wait(650);
       q('.veil').classList.add('on');
       q('.sheet').classList.add('on');
@@ -384,11 +385,11 @@
       const lis = qa('.sheet li');
       for (let i = 0; i < lis.length; i++) {
         lis[i].classList.add('run');
-        if (i === 0) await sc.catch(() => {}); // stays on "Read the chat." until the scan finishes
-        await wait([250, 750, 900, 900][i]);
+        await wait([1100, 900, 1000, 1000][i]);
         lis[i].classList.remove('run'); lis[i].classList.add('ok');
         await wait(160);
       }
+      reading = false;
       S.sheetReady = true;
       const b = q('.sheet .start');
       b.disabled = false; b.classList.add('shine');
@@ -831,7 +832,7 @@
   ];
 
   // rough chapter lengths for the progress bar: waits + pointer travel + built-in animation time
-  const EXTRA = [0, 7500, 3900, 700, 0, 4300, 300, 5500, 3200, 0];
+  const EXTRA = [0, 7500, 5200, 700, 0, 4300, 300, 5500, 3200, 0];
   const SCRIPT_MS = CHAPTERS.map((_, c) => (SCRIPT.filter((s) => s.ch === c).reduce((a, s) => a + (s.pause || s.after || 0) + (s.tap || s.drag ? 800 : 0), 0) + EXTRA[c]) * SPEED);
 
   function createVideo(app, { onChapter } = {}) {
