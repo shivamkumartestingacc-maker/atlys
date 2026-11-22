@@ -185,17 +185,17 @@
   /* =====================================================================
      App
      ===================================================================== */
-  // AI scan filter: water ripple (turbulence displacement) + blur + RGB split (chromatic aberration)
+  // AI scan filter: gentle ripple + soft blur + RGB split (chromatic aberration)
   function scanFilter() {
     if (document.getElementById('aiscan')) return;
     const d = document.createElement('div');
     d.innerHTML = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="aiscan" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-      <feTurbulence id="aiscanN" type="fractalNoise" baseFrequency="0.006 0.04" numOctaves="2" seed="4" result="n"/>
+      <feTurbulence id="aiscanN" type="fractalNoise" baseFrequency="0.006 0.035" numOctaves="1" seed="4" result="n"/>
       <feDisplacementMap id="aiscanD" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
-      <feGaussianBlur id="aiscanB" in="d" stdDeviation="1.6" result="b"/>
-      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-5" dy="-1" result="r2"/>
+      <feGaussianBlur in="d" stdDeviation="1.3" result="b"/>
+      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-4" dy="-1.5" result="r2"/>
       <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>
-      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="5" dy="1" result="b2"/>
+      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="4" dy="1.5" result="b2"/>
       <feBlend in="r2" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b2" mode="screen"/>
     </filter></svg>`;
     document.body.appendChild(d.firstChild);
@@ -341,7 +341,7 @@
       q('.fab').classList.add('glow');
     });
 
-    /* AI scan: a band sweeps up the chat; inside it the messages ripple, blur and split into RGB */
+    /* AI scan: a soft gradient band sweeps up the chat; inside it the messages blur slightly and split into RGB */
     async function scan(ms) {
       if (ctx.instant) return;
       const m = q('.msgs'), c = m.cloneNode(true), g = document.createElement('div');
@@ -352,15 +352,14 @@
       [c, g].forEach((e) => e.style.setProperty('--d', ms * SPEED + 'ms'));
       q('.chat').append(c, g);
       c.scrollTop = m.scrollTop;
-      // the ripple swells in and settles out while the noise keeps drifting, so it reads as water
-      const N = document.getElementById('aiscanN'), D = document.getElementById('aiscanD'), B = document.getElementById('aiscanB');
+      // a gentle ripple that swells mid-sweep and settles; the noise drifts slowly
+      const N = document.getElementById('aiscanN'), D = document.getElementById('aiscanD');
       const T = ms * SPEED, t0 = performance.now(), g0 = ctx.gen;
       (function f(now) {
         if (!c.isConnected || g0 !== ctx.gen) return;
-        const t = (now - t0) / 1000, p = Math.min(1, (now - t0) / T), env = Math.sin(Math.PI * p);
-        N.setAttribute('baseFrequency', `${(0.006 + 0.0025 * Math.sin(t * 2.1)).toFixed(4)} ${(0.04 + 0.014 * Math.sin(t * 1.4 + 1)).toFixed(4)}`);
-        D.setAttribute('scale', (6 + 18 * env).toFixed(1));
-        B.setAttribute('stdDeviation', (0.8 + 1.6 * env).toFixed(2));
+        const t = (now - t0) / 1000, p = Math.min(1, (now - t0) / T);
+        N.setAttribute('baseFrequency', `${(0.006 + 0.0015 * Math.sin(t * 1.6)).toFixed(4)} ${(0.035 + 0.008 * Math.sin(t * 1.1 + 1)).toFixed(4)}`);
+        D.setAttribute('scale', (2 + 7 * Math.sin(Math.PI * p)).toFixed(1));
         requestAnimationFrame(f);
       })(t0);
       try { await wait(ms); } finally { c.remove(); g.remove(); }
@@ -377,7 +376,8 @@
       const fab = q('.fab');
       fab.classList.remove('glow'); fab.classList.add('hide');
       if (S.sheetReady) { q('.veil').classList.add('on'); q('.sheet').classList.add('on'); return; }
-      const sc = scan(2500); // AI reads the chat
+      let reading = true; // AI keeps sweeping the chat until all 4 checks are done
+      (async () => { while (reading) await scan(2300); })().catch(() => {});
       await wait(650);
       q('.veil').classList.add('on');
       q('.sheet').classList.add('on');
@@ -385,11 +385,11 @@
       const lis = qa('.sheet li');
       for (let i = 0; i < lis.length; i++) {
         lis[i].classList.add('run');
-        if (i === 0) await sc.catch(() => {}); // stays on "Read the chat." until the scan finishes
-        await wait([250, 750, 900, 900][i]);
+        await wait([1100, 900, 1000, 1000][i]);
         lis[i].classList.remove('run'); lis[i].classList.add('ok');
         await wait(160);
       }
+      reading = false;
       S.sheetReady = true;
       const b = q('.sheet .start');
       b.disabled = false; b.classList.add('shine');
@@ -832,7 +832,7 @@
   ];
 
   // rough chapter lengths for the progress bar: waits + pointer travel + built-in animation time
-  const EXTRA = [0, 7500, 3900, 700, 0, 4300, 300, 5500, 3200, 0];
+  const EXTRA = [0, 7500, 5200, 700, 0, 4300, 300, 5500, 3200, 0];
   const SCRIPT_MS = CHAPTERS.map((_, c) => (SCRIPT.filter((s) => s.ch === c).reduce((a, s) => a + (s.pause || s.after || 0) + (s.tap || s.drag ? 800 : 0), 0) + EXTRA[c]) * SPEED);
 
   function createVideo(app, { onChapter } = {}) {
