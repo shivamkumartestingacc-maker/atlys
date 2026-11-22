@@ -236,8 +236,8 @@ svg.gi{stroke:url(#tgrad)}
 .vr.voted .fl{opacity:0}
 .vr.voted .ck{width:18px;margin-right:0}
 
-/* AI scan sweep: an edgeless gradient wash rises; content inside blurs slightly and splits into RGB */
-.chat .msgs.scanc{position:absolute;top:97px;left:-16px;right:-16px;bottom:92px;padding-left:36px!important;padding-right:36px!important;z-index:15;pointer-events:none;background:#fff;filter:url(#aiscan);overflow:hidden!important;
+/* AI scan sweep: an edgeless gradient wash rises; inside it content ripples gently, blurs and splits into RGB, which also tints the screen edges */
+.chat .msgs.scanc{position:absolute;top:97px;left:0;right:0;bottom:92px;z-index:15;pointer-events:none;background:#fff;filter:url(#aiscan);overflow:hidden!important;
   -webkit-mask-image:linear-gradient(to top,transparent 26%,rgba(0,0,0,.35) 38%,#000 47%,#000 53%,rgba(0,0,0,.35) 62%,transparent 74%);
   mask-image:linear-gradient(to top,transparent 26%,rgba(0,0,0,.35) 38%,#000 47%,#000 53%,rgba(0,0,0,.35) 62%,transparent 74%);
   -webkit-mask-size:100% 260%;mask-size:100% 260%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;

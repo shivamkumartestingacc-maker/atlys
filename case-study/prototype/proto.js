@@ -185,15 +185,17 @@
   /* =====================================================================
      App
      ===================================================================== */
-  // AI scan filter: soft blur + slight RGB split (chromatic aberration), no distortion
+  // AI scan filter: gentle ripple + soft blur + RGB split (chromatic aberration)
   function scanFilter() {
     if (document.getElementById('aiscan')) return;
     const d = document.createElement('div');
     d.innerHTML = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="aiscan" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-      <feGaussianBlur in="SourceGraphic" stdDeviation="1.3" result="b"/>
-      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-2.5" dy="0" result="r2"/>
+      <feTurbulence id="aiscanN" type="fractalNoise" baseFrequency="0.006 0.035" numOctaves="1" seed="4" result="n"/>
+      <feDisplacementMap id="aiscanD" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
+      <feGaussianBlur in="d" stdDeviation="1.3" result="b"/>
+      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-4" dy="-1.5" result="r2"/>
       <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>
-      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="2.5" dy="0" result="b2"/>
+      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="4" dy="1.5" result="b2"/>
       <feBlend in="r2" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b2" mode="screen"/>
     </filter></svg>`;
     document.body.appendChild(d.firstChild);
@@ -350,6 +352,16 @@
       [c, g].forEach((e) => e.style.setProperty('--d', ms * SPEED + 'ms'));
       q('.chat').append(c, g);
       c.scrollTop = m.scrollTop;
+      // a gentle ripple that swells mid-sweep and settles; the noise drifts slowly
+      const N = document.getElementById('aiscanN'), D = document.getElementById('aiscanD');
+      const T = ms * SPEED, t0 = performance.now(), g0 = ctx.gen;
+      (function f(now) {
+        if (!c.isConnected || g0 !== ctx.gen) return;
+        const t = (now - t0) / 1000, p = Math.min(1, (now - t0) / T);
+        N.setAttribute('baseFrequency', `${(0.006 + 0.0015 * Math.sin(t * 1.6)).toFixed(4)} ${(0.035 + 0.008 * Math.sin(t * 1.1 + 1)).toFixed(4)}`);
+        D.setAttribute('scale', (2 + 7 * Math.sin(Math.PI * p)).toFixed(1));
+        requestAnimationFrame(f);
+      })(t0);
       try { await wait(ms); } finally { c.remove(); g.remove(); }
     }
 
