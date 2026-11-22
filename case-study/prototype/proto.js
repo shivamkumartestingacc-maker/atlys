@@ -178,7 +178,7 @@
       </div>
     </div></div>
 
-    <div class="pfoot"><button class="btn gr tap" data-a="backchat">back to chat</button><button class="btn pa tap nx"><span>All good let’s plan</span>${I.arrow}</button></div>
+    <div class="pfoot"><button class="btn gr tap" data-a="backchat">back to chat</button><button class="btn pa tap nx"><span>All good let’s plan</span><b class="bdg"></b>${I.arrow}</button></div>
   </section>
   <div class="ptr"></div>`;
 
@@ -424,9 +424,43 @@
       if (p === 'rk') buildRank();
       syncNext();
     }
+    // snappy "added" flight: photo lifts, shrinks to a thumb and arcs into the Continue button
+    function flyIn(ph) {
+      const btn = q('.pfoot .nx'), from = local(ph), to = local(btn);
+      const W = 64, H = Math.round(64 * from.h / from.w), ex = to.x + to.w - 46, ey = to.y + to.h / 2;
+      const ox = document.createElement('div'), oy = document.createElement('div'), sc = document.createElement('div');
+      ox.className = 'fly'; oy.className = 'fly-y'; sc.className = 'fly-s';
+      sc.innerHTML = `<img src="${ph.querySelector('img').src}" alt="">`;
+      Object.assign(ox.style, { left: ex - W / 2 + 'px', top: ey - H / 2 + 'px', width: W + 'px', height: H + 'px' });
+      oy.appendChild(sc); ox.appendChild(oy); A.appendChild(ox);
+      const dx = from.x + from.w / 2 - ex, dy = from.y + from.h / 2 - ey, s0 = from.w / W, T = 560;
+      ph.animate([{ transform: 'scale(1)' }, { transform: 'scale(.97)', offset: .25 }, { transform: 'scale(1)' }], { duration: 420, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      ox.animate([{ transform: `translateX(${dx}px)` }, { transform: 'translateX(0)' }], { duration: T, easing: 'cubic-bezier(.3,.7,.2,1)', fill: 'both' });
+      oy.animate([{ transform: `translateY(${dy}px)` }, { transform: `translateY(${dy - 36}px)`, offset: .22 }, { transform: 'translateY(0)' }], { duration: T, easing: 'cubic-bezier(.5,0,.75,.4)', fill: 'both' });
+      const a = sc.animate([
+        { transform: `scale(${s0})`, borderRadius: `${14 / s0}px`, boxShadow: '0 0 0 rgba(0,0,0,0)', opacity: 1 },
+        { transform: `scale(${s0 * 0.62})`, borderRadius: '10px', boxShadow: '0 14px 30px rgba(40,30,120,.35)', opacity: 1, offset: .2 },
+        { transform: 'scale(.9)', borderRadius: '10px', opacity: 1, offset: .82 },
+        { transform: 'scale(.3)', borderRadius: '50%', opacity: 0 }
+      ], { duration: T, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'both' });
+      a.onfinish = () => {
+        ox.remove();
+        btn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.05)', offset: .35 }, { transform: 'scale(1)' }], { duration: 380, easing: 'cubic-bezier(.3,1.6,.6,1)' });
+        btn.classList.remove('shine'); reflow(btn); btn.classList.add('shine');
+        updateBadge(true);
+      };
+    }
+    function updateBadge(bump) {
+      const b = q('.pfoot .bdg'), n = S.page === 'rec' ? S.added.size : 0;
+      b.classList.toggle('on', n > 0);
+      b.parentElement.classList.toggle('hasb', n > 0); // badge stands in for the arrow so the label fits
+      if (n) b.textContent = n;
+      if (bump && n) { b.classList.remove('bump'); reflow(b); b.classList.add('bump'); }
+    }
     function syncNext() {
       const b = q('.pfoot .nx');
       b.disabled = S.page === 'rec' && (S.thinking || S.added.size === 0);
+      if (S.page !== 'rec') updateBadge(false);
     }
     const openPlan = () => run(async () => {
       if (!S.sheetReady) return;
@@ -485,6 +519,21 @@
       if (!c.s || c.e) { c.s = d; c.e = 0; } else if (d > c.s) c.e = d; else c.s = d;
       renderCal();
     }
+    // drag across the calendar to select a range; a plain tap still uses pickDay
+    function calDrag(d0) {
+      let moved = false;
+      const mv = (ev) => {
+        const dd = qa('.cal .d').find((c) => { const r = c.getBoundingClientRect(); return ev.clientX >= r.left && ev.clientX < r.right && ev.clientY >= r.top && ev.clientY < r.bottom; });
+        if (!dd) return;
+        const d1 = +dd.dataset.d;
+        if (d1 === d0 && !moved) return;
+        moved = true;
+        S.cal.s = Math.min(d0, d1); S.cal.e = d1 === d0 ? 0 : Math.max(d0, d1);
+        renderCal(); S.last = performance.now();
+      };
+      const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); if (moved) { S.dragged = true; setTimeout(() => { S.dragged = false; }, 0); } };
+      addEventListener('pointermove', mv); addEventListener('pointerup', up);
+    }
     function setOk(k, on) { const el = q(`[data-ok="${k}"]`); if (el) el.classList.toggle('on', on); }
 
     /* slider */
@@ -523,16 +572,8 @@
       $(btn, 'span').textContent = on ? 'Added' : 'Add';
       btn.classList.remove('pop'); reflow(btn); btn.classList.add('pop');
       syncNext();
-      if (on && !ctx.instant) { // thumbnail flies into the continue button
-        const ph = btn.closest('.dc').querySelector('.ph'), to = local(q('.pfoot .nx')), from = local(ph);
-        const f = document.createElement('div');
-        f.className = 'fly';
-        f.innerHTML = `<img src="${ph.querySelector('img').src}" alt="">`;
-        Object.assign(f.style, { left: from.x + 'px', top: from.y + 'px', width: from.w + 'px', height: from.h + 'px' });
-        A.appendChild(f); reflow(f);
-        Object.assign(f.style, { left: to.x + to.w / 2 - 20 + 'px', top: to.y + 6 + 'px', width: '40px', height: '40px', borderRadius: '50%', opacity: '.3' });
-        setTimeout(() => { f.remove(); const b = q('.pfoot .nx'); b.classList.remove('shine'); reflow(b); b.classList.add('shine'); }, 760);
-      }
+      if (on && !ctx.instant) flyIn(btn.closest('.dc').querySelector('.ph'));
+      else updateBadge(false);
     }
 
     /* rank */
@@ -676,10 +717,14 @@
         if (t.closest('.sheet .start')) return openPlan();
         if (t.closest('.pfoot .nx')) return next();
         if (t.closest('.nx2')) return toast('Itinerary planning comes next');
+        if (t.closest('.cele.on .tk')) { // tap the ticket: another burst
+          const cd = q('.tk .cd'); cd.classList.remove('tap'); reflow(cd); cd.classList.add('tap');
+          return confetti(q('.cele canvas'), ctx);
+        }
         const tg = t.closest('.tgl');
         if (tg) { S.flex = !S.flex; tg.classList.toggle('on', S.flex); return; }
         const d = t.closest('.cal .d');
-        if (d) return pickDay(+d.dataset.d);
+        if (d) { if (S.dragged) { S.dragged = false; return; } return pickDay(+d.dataset.d); }
         const ch = t.closest('[data-c]');
         if (ch) {
           if (ch.dataset.c === 'dest') { ch.classList.toggle('on'); setOk('dest', qa('[data-c="dest"].on').length > 0); }
@@ -693,6 +738,8 @@
         if (t.closest('.chip') || t.closest('.newg')) return toast('Open Goa Trip to try the flow');
       });
       A.addEventListener('pointerdown', (e) => {
+        const day = e.target.closest('.cal .d');
+        if (day) { e.preventDefault(); return calDrag(+day.dataset.d); }
         const th = e.target.closest('.sl .th');
         if (th) { e.preventDefault(); return sliderDrag(th, e); }
         const ri = e.target.closest('.ri');
@@ -758,36 +805,37 @@
   /* =====================================================================
      Confetti
      ===================================================================== */
-  function confetti(cv, ctx) {
+  function confetti(cv, ctx) { // one loop per canvas; another call adds a burst to it
     const dpr = Math.min(2, window.devicePixelRatio || 1), W = 393, H = 852;
-    cv.width = W * dpr; cv.height = H * dpr;
-    const c = cv.getContext('2d'); c.scale(dpr, dpr);
     const COL = ['#5a52e0', '#8a3fd0', '#e0457b', '#f58a3a', '#f7b23b', '#7fe0d0', '#ffffff'];
-    const P = [];
     const burst = (x, y, ang, spread, n, sp) => {
       for (let i = 0; i < n; i++) {
         const a = ang + (Math.random() - 0.5) * spread, v = sp * (0.55 + Math.random() * 0.6);
-        P.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.35, w: 5 + Math.random() * 6, h: 3 + Math.random() * 5, col: COL[(Math.random() * COL.length) | 0], sh: Math.random() < 0.25 ? 1 : 0, wob: Math.random() * 6 });
+        cv._P.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v, r: Math.random() * Math.PI, vr: (Math.random() - 0.5) * 0.35, w: 5 + Math.random() * 6, h: 3 + Math.random() * 5, col: COL[(Math.random() * COL.length) | 0], sh: Math.random() < 0.25 ? 1 : 0, wob: Math.random() * 6, t: performance.now() });
       }
     };
+    const fresh = !cv._P;
+    if (fresh) { cv.width = W * dpr; cv.height = H * dpr; cv.getContext('2d').scale(dpr, dpr); cv._P = []; }
     burst(30, 640, -Math.PI / 2 + 0.55, 0.9, 70, 17);
     burst(363, 640, -Math.PI / 2 - 0.55, 0.9, 70, 17);
-    setTimeout(() => burst(196, 380, -Math.PI / 2, 2.6, 60, 11), 250);
-    const g = ctx.gen, t0 = performance.now();
+    setTimeout(() => cv._P && burst(196, 380, -Math.PI / 2, 2.6, 60, 11), 250);
+    if (cv._run) return;
+    cv._run = true;
+    const c = cv.getContext('2d'), g = ctx.gen;
     (function f(now) {
-      if (g !== ctx.gen) return c.clearRect(0, 0, W, H);
-      const t = now - t0;
       c.clearRect(0, 0, W, H);
-      const fade = t > 2600 ? Math.max(0, 1 - (t - 2600) / 900) : 1;
-      for (const p of P) {
-        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.38; p.x += p.vx + Math.sin((t / 160) + p.wob) * 0.6; p.y += p.vy; p.r += p.vr;
+      if (g !== ctx.gen) { cv._run = false; cv._P = []; return; }
+      cv._P = cv._P.filter((p) => now - p.t < 3500 && p.y < H + 40);
+      for (const p of cv._P) {
+        const age = now - p.t, fade = age > 2600 ? Math.max(0, 1 - (age - 2600) / 900) : 1;
+        p.vx *= 0.985; p.vy = p.vy * 0.985 + 0.38; p.x += p.vx + Math.sin((age / 160) + p.wob) * 0.6; p.y += p.vy; p.r += p.vr;
         c.save(); c.globalAlpha = fade; c.translate(p.x, p.y); c.rotate(p.r); c.fillStyle = p.col;
         if (p.sh) { c.beginPath(); c.arc(0, 0, p.h / 1.6, 0, 7); c.fill(); }
-        else c.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(t / 120 + p.wob)) + 1);
+        else c.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(age / 120 + p.wob)) + 1);
         c.restore();
       }
-      if (fade > 0) requestAnimationFrame(f); else c.clearRect(0, 0, W, H);
-    })(t0);
+      if (cv._P.length) requestAnimationFrame(f); else cv._run = false;
+    })(performance.now());
   }
 
   /* =====================================================================
@@ -814,8 +862,7 @@
     { ch: 2, tap: '.fab', after: 900 },
     { ch: 3, tap: '.sheet .start', after: 3000 },
     { ch: 4, tap: '.pfoot .nx', after: 1000 },
-    { ch: 4, tap: '.cal .d[data-d="15"]', after: 300 },
-    { ch: 4, tap: '.cal .d[data-d="20"]', after: 500 },
+    { ch: 4, drag: '.cal .d[data-d="15"]', to: (app) => { const l = app.local(app.A.querySelector('.cal .d[data-d="20"]')); return { x: l.x + l.w / 2, y: l.y + l.h / 2 }; }, after: 500 },
     { ch: 4, tap: '.tgl', after: 400 },
     { ch: 4, tap: '[data-c="dest"]:nth-child(2)', after: 400 },
     { ch: 4, drag: '.th[data-t="0"]', to: (app) => app.sliderX(25), after: 200 },
