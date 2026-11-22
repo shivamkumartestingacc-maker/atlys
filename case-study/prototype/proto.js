@@ -485,6 +485,21 @@
       if (!c.s || c.e) { c.s = d; c.e = 0; } else if (d > c.s) c.e = d; else c.s = d;
       renderCal();
     }
+    // drag across the calendar to select a range; a plain tap still uses pickDay
+    function calDrag(d0) {
+      let moved = false;
+      const mv = (ev) => {
+        const dd = qa('.cal .d').find((c) => { const r = c.getBoundingClientRect(); return ev.clientX >= r.left && ev.clientX < r.right && ev.clientY >= r.top && ev.clientY < r.bottom; });
+        if (!dd) return;
+        const d1 = +dd.dataset.d;
+        if (d1 === d0 && !moved) return;
+        moved = true;
+        S.cal.s = Math.min(d0, d1); S.cal.e = d1 === d0 ? 0 : Math.max(d0, d1);
+        renderCal(); S.last = performance.now();
+      };
+      const up = () => { removeEventListener('pointermove', mv); removeEventListener('pointerup', up); if (moved) { S.dragged = true; setTimeout(() => { S.dragged = false; }, 0); } };
+      addEventListener('pointermove', mv); addEventListener('pointerup', up);
+    }
     function setOk(k, on) { const el = q(`[data-ok="${k}"]`); if (el) el.classList.toggle('on', on); }
 
     /* slider */
@@ -679,7 +694,7 @@
         const tg = t.closest('.tgl');
         if (tg) { S.flex = !S.flex; tg.classList.toggle('on', S.flex); return; }
         const d = t.closest('.cal .d');
-        if (d) return pickDay(+d.dataset.d);
+        if (d) { if (S.dragged) { S.dragged = false; return; } return pickDay(+d.dataset.d); }
         const ch = t.closest('[data-c]');
         if (ch) {
           if (ch.dataset.c === 'dest') { ch.classList.toggle('on'); setOk('dest', qa('[data-c="dest"].on').length > 0); }
@@ -693,6 +708,8 @@
         if (t.closest('.chip') || t.closest('.newg')) return toast('Open Goa Trip to try the flow');
       });
       A.addEventListener('pointerdown', (e) => {
+        const day = e.target.closest('.cal .d');
+        if (day) { e.preventDefault(); return calDrag(+day.dataset.d); }
         const th = e.target.closest('.sl .th');
         if (th) { e.preventDefault(); return sliderDrag(th, e); }
         const ri = e.target.closest('.ri');
@@ -814,8 +831,7 @@
     { ch: 2, tap: '.fab', after: 900 },
     { ch: 3, tap: '.sheet .start', after: 3000 },
     { ch: 4, tap: '.pfoot .nx', after: 1000 },
-    { ch: 4, tap: '.cal .d[data-d="15"]', after: 300 },
-    { ch: 4, tap: '.cal .d[data-d="20"]', after: 500 },
+    { ch: 4, drag: '.cal .d[data-d="15"]', to: (app) => { const l = app.local(app.A.querySelector('.cal .d[data-d="20"]')); return { x: l.x + l.w / 2, y: l.y + l.h / 2 }; }, after: 500 },
     { ch: 4, tap: '.tgl', after: 400 },
     { ch: 4, tap: '[data-c="dest"]:nth-child(2)', after: 400 },
     { ch: 4, drag: '.th[data-t="0"]', to: (app) => app.sliderX(25), after: 200 },
