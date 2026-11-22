@@ -185,17 +185,15 @@
   /* =====================================================================
      App
      ===================================================================== */
-  // AI scan filter: water ripple (turbulence displacement) + blur + RGB split (chromatic aberration)
+  // AI scan filter: soft blur + slight RGB split (chromatic aberration), no distortion
   function scanFilter() {
     if (document.getElementById('aiscan')) return;
     const d = document.createElement('div');
     d.innerHTML = `<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="aiscan" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
-      <feTurbulence id="aiscanN" type="fractalNoise" baseFrequency="0.006 0.04" numOctaves="2" seed="4" result="n"/>
-      <feDisplacementMap id="aiscanD" in="SourceGraphic" in2="n" scale="0" xChannelSelector="R" yChannelSelector="G" result="d"/>
-      <feGaussianBlur id="aiscanB" in="d" stdDeviation="1.6" result="b"/>
-      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-5" dy="-1" result="r2"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.3" result="b"/>
+      <feColorMatrix in="b" type="matrix" values="1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0" result="r"/><feOffset in="r" dx="-2.5" dy="0" result="r2"/>
       <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0" result="g"/>
-      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="5" dy="1" result="b2"/>
+      <feColorMatrix in="b" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0" result="bl"/><feOffset in="bl" dx="2.5" dy="0" result="b2"/>
       <feBlend in="r2" in2="g" mode="screen" result="rg"/><feBlend in="rg" in2="b2" mode="screen"/>
     </filter></svg>`;
     document.body.appendChild(d.firstChild);
@@ -341,7 +339,7 @@
       q('.fab').classList.add('glow');
     });
 
-    /* AI scan: a band sweeps up the chat; inside it the messages ripple, blur and split into RGB */
+    /* AI scan: a soft gradient band sweeps up the chat; inside it the messages blur slightly and split into RGB */
     async function scan(ms) {
       if (ctx.instant) return;
       const m = q('.msgs'), c = m.cloneNode(true), g = document.createElement('div');
@@ -352,17 +350,6 @@
       [c, g].forEach((e) => e.style.setProperty('--d', ms * SPEED + 'ms'));
       q('.chat').append(c, g);
       c.scrollTop = m.scrollTop;
-      // the ripple swells in and settles out while the noise keeps drifting, so it reads as water
-      const N = document.getElementById('aiscanN'), D = document.getElementById('aiscanD'), B = document.getElementById('aiscanB');
-      const T = ms * SPEED, t0 = performance.now(), g0 = ctx.gen;
-      (function f(now) {
-        if (!c.isConnected || g0 !== ctx.gen) return;
-        const t = (now - t0) / 1000, p = Math.min(1, (now - t0) / T), env = Math.sin(Math.PI * p);
-        N.setAttribute('baseFrequency', `${(0.006 + 0.0025 * Math.sin(t * 2.1)).toFixed(4)} ${(0.04 + 0.014 * Math.sin(t * 1.4 + 1)).toFixed(4)}`);
-        D.setAttribute('scale', (6 + 18 * env).toFixed(1));
-        B.setAttribute('stdDeviation', (0.8 + 1.6 * env).toFixed(2));
-        requestAnimationFrame(f);
-      })(t0);
       try { await wait(ms); } finally { c.remove(); g.remove(); }
     }
 
